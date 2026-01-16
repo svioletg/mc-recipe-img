@@ -4,24 +4,53 @@ import platform
 import re
 from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from zipfile import ZipFile
 
-from maybetype import Maybe
+from pydantic import BaseModel
 
 from mc_recipe_img import file_cache, logger, mem_cache
+from mc_recipe_img.util import ensure_list
 
 DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
 DEFAULT_MCPATH_LINUX   : Path = Path.home() / '.minecraft'
 
+class PackMCMeta(BaseModel):
+    # Based on the information given here: https://minecraft.wiki/w/Pack.mcmeta
+
+    class _Pack(BaseModel):
+        description: str | list[dict[str, Any]] | dict[str, Any]
+        pack_format: int | None = None
+        min_format: int | list[int] | None = None
+        max_format: int | list[int] | None = None
+        supported_formats: int | int | list[int] | dict[str, int] | None = None
+
+    class _Features(BaseModel):
+        enabled: list[str]
+
+    pack: _Pack
+    features: _Features | None = None
+
 class Datapack:
-    def __init__(self, dir_path: str | Path) -> None:
-        self.dir_path = Path(dir_path)
+    def __init__(self, dir_path: str | Path, mc_versions: list[str] | None = None) -> None:
+        """
+        :param dir_path: Path to the datapack's directory, i.e. the directory that contains `data/` and `pack.mcmeta`.
+        :param mc_versions: Which Minecraft versions this datapack supports, used for things like expanding vanilla
+            tags with `Datapack.expand_tag()`. If `None`, a list of versions from oldest to newest will be assembled
+            based on the pack's `pack_format`, `min_format`, and `max_format` fields in its `pack.mcmeta`. This list
+            is checked in order from first to last when attempting to get information from an installed JAR file.
+        """
+        self.dir_path: Path = Path(dir_path)
         if not self.dir_path.is_dir():
             raise NotADirectoryError(f'Not a directory or does not exist: {self.dir_path}')
         if not (fp.stem for fp in self.dir_path.glob('*/') if fp.stem == 'data'):
             raise ValueError(f'Failed to find "data" subdirectory in datapack path: {self.dir_path}')
+
+        with open(self.dir_path / 'pack.mcmeta', 'r', encoding='utf-8') as f:
+            self.meta = PackMCMeta(**json.load(f))
+
+        self.mc_versions: list[str] = mc_versions or []
 
         self.recipes: dict[Path, dict[str, Any]] = {}
         self.tags: dict[Path, list[str]] = {}
@@ -33,6 +62,11 @@ class Datapack:
 
     def expand_tag(self, tag: str) -> list[str]:
         """Returns the resources associated with a given tag."""
+        tag = tag.removeprefix('#')
+        if (':' not in tag) or tag.startswith('minecraft:'):
+            # Assume no namespace means the minecraft namespace
+            # Expand minecraft-namespaced tag from JAR file namelist
+            return expand_vanilla_tag(tag, self.mc_versions)
         return self.tags[self.resource_to_path(tag)]
 
     def path_to_resource(self, fp: str | Path) -> str:
@@ -97,6 +131,42 @@ def get_mc_version_jar(version: str, dot_minecraft: Path | None = None) -> Path:
     dot_minecraft = dot_minecraft or get_mc_home()
     return dot_minecraft / f'versions/{version}/{version}.jar'
 
+def get_jar_namelist(jar_path: str | Path, *, only: Literal['textures', 'tags'] | None = None) -> list[str]:
+    """
+    Returns the list of item/block texture or tag names in the given JAR file, returning them from the cache if
+    available, otherwise getting them from the JAR, caching the list, and returning it.
+    """
+    jar_path = Path(jar_path).absolute()
+    if jar_path.suffix != '.jar':
+        raise ValueError(f'Expected `.jar` file suffix: {jar_path}')
+
+    jar_names: list[str] = []
+
+    file_cache_key: str = f'jar_namelist/{jar_path.stem}.json'
+    cached_names: list[str] = file_cache \
+        .get(file_cache_key, {}, parser=json.loads) \
+        .get('namelist', [])
+    if cached_names:
+        jar_names = cached_names
+    else:
+        jar_names = [
+            name for name in ZipFile(jar_path).namelist()
+            if name.startswith(
+                ('assets/minecraft/textures/block/', 'assets/minecraft/textures/item/', 'data/minecraft/tags/'),
+            )
+        ]
+        file_cache.store(file_cache_key, json.dumps({'namelist': jar_names}))
+
+    match only:
+        case None:
+            return jar_names
+        case 'textures':
+            return [name for name in jar_names if name.startswith('assets/minecraft/textures/')]
+        case 'tags':
+            return [name for name in jar_names if name.startswith('data/minecraft/tags/')]
+        case _:
+            raise ValueError(f'Unexpected only value: {only!r}')
+
 def extract_textures_from_jar(
         jar_path: str | Path,
         out_dir: str | Path,
@@ -159,33 +229,44 @@ def extract_textures_from_jar(
 
     return extracted
 
-def get_jar_namelist(jar_path: str | Path) -> list[str]:
+def expand_vanilla_tag(tag: str, mc_versions: str | list[str]) -> list[str]:
     """
-    Returns the list of item/block texture or tag names in the given JAR file, returning them from the cache if
-    available, otherwise getting them from the JAR, caching the list, and returning it.
+    Returns the values associated with a vanilla (`minecraft` namespace) tag by attempting to find and read it from one
+    the associated JAR files for the versions given in `mc_versions`.
     """
-    jar_path = Path(jar_path).absolute()
-    if jar_path.suffix != '.jar':
-        raise ValueError(f'Expected `.jar` file suffix: {jar_path}')
+    mc_versions = ensure_list(mc_versions)
+    tag_stem: str = tag.split(':')[-1]
 
-    jar_names: list[str] = []
-
-    file_cache_key: str = f'jar_namelist/{jar_path.stem}.json'
-    cached_names: list[str] = file_cache \
-        .get(file_cache_key, {}, parser=json.loads) \
-        .get('namelist', [])
-    if cached_names:
-        jar_names = cached_names
+    for jar_path in (get_mc_version_jar(v) for v in mc_versions):
+        if jar_path.is_file():
+            break
     else:
-        jar_names = [
-            name for name in ZipFile(jar_path).namelist()
-            if name.startswith(
-                ('assets/minecraft/textures/block/', 'assets/minecraft/textures/item/', 'data/minecraft/tags/'),
-            )
-        ]
-        file_cache.store(file_cache_key, json.dumps({'namelist': jar_names}))
+        raise ValueError(
+            f'Failed to find installed JARs for any of these versions: {', '.join(mc_versions)}',
+        )
 
-    return jar_names
+    mem_cache_key: str = f'vanilla_tag/{jar_path.stem}/{tag_stem}'
+    if cached := mem_cache.data.get(mem_cache_key):
+        return cached['values']
+
+    file_cache_key: str = mem_cache_key + '.json'
+    if cached := file_cache.get(file_cache_key, parser=json.loads):
+        mem_cache.data[mem_cache_key] = cached
+        return cached['values']
+
+    for name in map(Path, get_jar_namelist(jar_path, only='tags')):
+        if name.stem == tag_stem:
+            break
+    else:
+        raise ValueError(f'Failed to find vanilla tag "#{tag!r}" in JAR file: {jar_path}')
+
+    # Read the tag JSON from the JAR and cache it before returning
+    with ZipFile(jar_path) as jar:
+        values: list[str] = json.loads(jar.read(str(name)).decode('utf-8'))['values']
+
+    mem_cache.data[mem_cache_key] = {'values': values}
+    file_cache.store(file_cache_key, json.dumps({'values': values}))
+    return values
 
 def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
     """

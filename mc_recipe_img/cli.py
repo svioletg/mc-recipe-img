@@ -1,6 +1,6 @@
+import shutil
 from enum import Enum
 from pathlib import Path
-import shutil
 from typing import Annotated, NoReturn
 
 import typer
@@ -9,7 +9,7 @@ from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
 
-from mc_recipe_img import USER_CACHE_DIR, init_logger, logger, mc, file_cache
+from mc_recipe_img import USER_CACHE_DIR, file_cache, init_logger, logger, mc
 from mc_recipe_img.core import find_required_textures
 from mc_recipe_img.util import parse_envvar_paths, partitioned
 

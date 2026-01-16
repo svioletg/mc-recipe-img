@@ -13,6 +13,13 @@ def dict_try_keys[K, V](d: dict[K, V], *keys: K, default: V | None = None) -> V 
             return v
     return default
 
+def ensure_list[T](it: T | list[T]) -> list[T]:
+    """
+    Returns `it` if already a list, otherwise returns a list containing `it` as its only item.
+    Note that this will only work for one-dimensional lists, i.e. not lists of lists.
+    """
+    return it if isinstance(it, list) else [it]
+
 def partition[T](predicate: Callable[[T], bool], it: Iterable[T]) -> tuple[Generator[T], Generator[T]]:
     """
     Returns two generators in which the left yields all items of `it` for which `predicate(i)` equals `True`, and the
