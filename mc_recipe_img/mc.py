@@ -69,8 +69,13 @@ class Datapack:
                 with open(fp, 'r', encoding='utf-8') as f:
                     self.tags[fp] = json.load(f)['values']
 
-def get_default_mcpath() -> Path:
-    """Returns the default `.minecraft` path for this operating system."""
+def get_mc_home() -> Path:
+    """
+    Returns the user's Minecraft installation directory, first checking the `MC_HOME` environment variable, then
+    returning the default for the OS in use if this variable is unset.
+    """
+    if (env_val := os.getenv('MC_HOME')):
+        return Path(env_val)
     match system := platform.system():
         case 'Windows':
             return DEFAULT_MCPATH_WINDOWS
@@ -79,7 +84,7 @@ def get_default_mcpath() -> Path:
         case 'Linux':
             return DEFAULT_MCPATH_LINUX
         case _:
-            raise ValueError(f'Unexpected system value: {system}')
+            raise ValueError(f'Unexpected OS value: {system}')
 
 def get_mc_version_jar(version: str, dot_minecraft: Path | None = None) -> Path:
     """
@@ -89,7 +94,7 @@ def get_mc_version_jar(version: str, dot_minecraft: Path | None = None) -> Path:
         If `None`, the `MC_HOME` enviornment variable is used if set, otherwise the default path for the current OS is
         used according to `get_default_mcpath()`.
     """
-    dot_minecraft = dot_minecraft or Maybe(os.getenv('MC_HOME')).then(Path) or get_default_mcpath()
+    dot_minecraft = dot_minecraft or get_mc_home()
     return dot_minecraft / f'versions/{version}/{version}.jar'
 
 def extract_textures_from_jar(
@@ -154,6 +159,34 @@ def extract_textures_from_jar(
 
     return extracted
 
+def get_jar_namelist(jar_path: str | Path) -> list[str]:
+    """
+    Returns the list of item/block texture or tag names in the given JAR file, returning them from the cache if
+    available, otherwise getting them from the JAR, caching the list, and returning it.
+    """
+    jar_path = Path(jar_path).absolute()
+    if jar_path.suffix != '.jar':
+        raise ValueError(f'Expected `.jar` file suffix: {jar_path}')
+
+    jar_names: list[str] = []
+
+    file_cache_key: str = f'jar_namelist/{jar_path.stem}.json'
+    cached_names: list[str] = file_cache \
+        .get(file_cache_key, {}, parser=json.loads) \
+        .get('namelist', [])
+    if cached_names:
+        jar_names = cached_names
+    else:
+        jar_names = [
+            name for name in ZipFile(jar_path).namelist()
+            if name.startswith(
+                ('assets/minecraft/textures/block/', 'assets/minecraft/textures/item/', 'data/minecraft/tags/'),
+            )
+        ]
+        file_cache.store(file_cache_key, json.dumps({'namelist': jar_names}))
+
+    return jar_names
+
 def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
     """
     Returns the file path for this item's texture found in any of `assets_sources`. If a namespace is not given in
@@ -181,22 +214,8 @@ def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
 
         if not src.is_dir():
             jar_src: Path = get_mc_version_jar(str(src))
-            mem_cache_key: str = f'jar_asset_names/{jar_src.stem}'
-            jar_names: list[str] = mem_cache.data.get(mem_cache_key, [])
-
-            if not jar_names:
-                file_cache_key: str = f'jar_asset_names/{jar_src.stem}.json'
-                cached_names: list[str] = file_cache \
-                    .get(file_cache_key, {}, parser=json.loads) \
-                    .get('namelist', [])
-                if cached_names:
-                    jar_names = cached_names
-                else:
-                    jar_names = [
-                        name for name in ZipFile(jar_src).namelist() if name.startswith('assets/minecraft/textures/')
-                    ]
-                    file_cache.store(file_cache_key, json.dumps({'namelist': jar_names}))
-                mem_cache.data[mem_cache_key] = jar_names.copy()
+            mem_cache_key: str = f'jar_namelist/{jar_src.stem}'
+            jar_names: list[str] = mem_cache.get_or_store(mem_cache_key, lambda jar=jar_src: get_jar_namelist(jar))
 
             if (tpath := f'assets/{item_stem}') in jar_names:
                 return Path(jar_src / tpath)

@@ -23,20 +23,34 @@ USER_CACHE_DIR: Path = Path(platformdirs.user_cache_dir(
 logger.remove()
 
 class FileCache:
-    def __init__(self, cache_dir: str | Path) -> None:
+    def __init__(self, cache_dir: str | Path, *, enabled: bool = True) -> None:
+        """
+        :param cache_dir: The directory this cache will look for files in.
+        :param enabled: If `False`, the cache will be disabled. More specifically, `FileCache.exists()` always returns
+            `False`, `FileCache.get()` always returns its `default` parameter, and `FileCache.store()` writes nothing
+            to disk (but still returns the `Path` it would have written to).
+        """
         self.cache_dir = Path(cache_dir).absolute()
         if not self.cache_dir.is_dir():
             raise NotADirectoryError(f'Not a directory or does not exist: {self.cache_dir}')
+        self.enabled = enabled
 
     def exists(self, fp: str | Path) -> bool:
         """Returns whether `fp` exists in this cache's directory."""
+        if not self.enabled:
+            return False
+
         return (self.cache_dir / fp).is_file()
 
     def get[T](self, fp: str | Path, default: T | None = None, *, parser: Callable[[str], T] = str) -> T | None:
         """
         Returns the contents of the file at `fp` in this cache's directory if the path exists, otherwise returns
-        `None`. The file contents are decoded with UTF-8 and passed to `parser` before returning them.
+        `None`. The file contents are decoded with UTF-8 and passed to `parser` before returning them—`parser` is *not*
+        called on `default`.
         """
+        if not self.enabled:
+            return default
+
         if (fp := self.cache_dir / fp).is_file():
             return parser(fp.read_text('utf-8'))
         return default
@@ -48,8 +62,11 @@ class FileCache:
         The contents are stored in UTF-8 encoding.
         """
         fp = self.cache_dir / fp
+        if not self.enabled:
+            return fp
+
         if fp.parent != self.cache_dir:
-            fp.parent.mkdir(parents=True)
+            fp.parent.mkdir(parents=True, exist_ok=True)
         with open(fp, 'w', encoding='utf-8') as f:
             f.write(value)
         return fp

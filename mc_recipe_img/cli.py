@@ -1,5 +1,6 @@
 from enum import Enum
 from pathlib import Path
+import shutil
 from typing import Annotated, NoReturn
 
 import typer
@@ -8,7 +9,7 @@ from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
 
-from mc_recipe_img import USER_CACHE_DIR, init_logger, logger, mc
+from mc_recipe_img import USER_CACHE_DIR, init_logger, logger, mc, file_cache
 from mc_recipe_img.core import find_required_textures
 from mc_recipe_img.util import parse_envvar_paths, partitioned
 
@@ -57,7 +58,7 @@ console: Console = setup_rich_console()
 def abort(msg: str = 'Aborting.', *, code: int = 1) -> NoReturn:
     """Prints a message and raises `SystemExit` with the given code."""
     console.print(f'{msg}')
-    raise SystemExit(1)
+    raise SystemExit(code)
 
 cligroup_cache = typer.Typer(no_args_is_help=True)
 
@@ -102,7 +103,7 @@ cli.add_typer(cligroup_cache, name='cache')
 @cli.command()
 def run(
         datapack_dir: Annotated[Path, typer.Option(
-            '--pack', '-i', envvar='MC_DATAPACK_DIR', help='Path to the datapack to use recipes from.',
+            '--pack', '-i', envvar='DATAPACK_DIR', help='Path to the datapack to use recipes from.',
         )],
         output_dir: Annotated[Path, typer.Option(
             '--out', '-o', help='Directory to save the generated recipe images to.',
@@ -138,20 +139,27 @@ def run(
 
 @cli.callback()
 def main(
+        *,
         log_level: Annotated[LogLevel, typer.Option(
             '--log-level', '-l', help='Sets the log level.',
             case_sensitive=False,
         )] = LogLevel.INFO,
-        *,
         debug: Annotated[bool, typer.Option(
             '-D', help='Shortcut for `--log-level=debug`. Overrides any value given to --log-level.',
             is_flag=True,
+        )] = False,
+        clear_cache: Annotated[bool, typer.Option(
+            '--clear-cache', help='Clears the script\'s cached files directory before running, with no confirmation.',
         )] = False,
     ) -> None:
     if debug:
         log_level = LogLevel.DEBUG
     init_logger(log_level)
     logger.debug('Logger initialized')
+
+    if clear_cache:
+        logger.info('Clearing the cache...')
+        shutil.rmtree(file_cache.cache_dir)
 
 if __name__ == '__main__':
     cli()
