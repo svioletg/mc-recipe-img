@@ -1,0 +1,32 @@
+[project]
+name = "mc-recipe-img"
+version = "0.1.0"
+description = "Creates Minecraft recipe images from recipe JSON files in a datapack."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "loguru>=0.7.3",
+    "maybetype",
+    "pillow>=12.1.0",
+    "platformdirs>=4.4.0",
+    "pydantic>=2.11.7",
+    "rich>=14.1.0",
+    "typer>=0.21.1",
+]
+
+[build-system]
+requires = ["hatchling >= 1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+maybetype = { git = "https://github.com/svioletg/py-maybetype" }
+
+[project.scripts]
+"mc-recipe-img" = "mc_recipe_img.cli:cli"
+
+[project.optional-dependencies]
+dev = [
+    "ipython>=9.5.0",
+    "pytest>=9.0.2",
+    "ruff>=0.14.11",
+]

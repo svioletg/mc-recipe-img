@@ -1,0 +1,31 @@
+target-version = "py313"
+output-format = "concise"
+
+line-length = 120
+
+[lint]
+select = [
+    "A", "ANN",
+    "B",
+    "C4", "COM",
+    "DTZ",
+    "E", "ERA",
+    "F", "FBT", "FURB",
+    "I", "ISC",
+    "LOG",
+    "N",
+    "PT", "PIE", "PLC", "PLE", "PLR", "PLW",
+    "RET", "RSE", "RUF",
+    "S", "SIM", "SLF",
+    "T20", "TID", "TRY",
+    "UP",
+    "W",
+]
+fixable = ["COM812", "F401", "I", "W292", "W293"]
+ignore = ["ANN003", "PLR0912", "RET505", "TRY003", "UP015"]
+
+[lint.flake8-implicit-str-concat]
+allow-multiline = false
+
+[lint.per-file-ignores]
+"tests/*.py" = ["ANN201", "S101"]

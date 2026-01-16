@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#.",
+    ".#"
+  ],
+  "key": {
+    "#": "minecraft:stone",
+    ".": "minecraft:charcoal"
+  },
+  "result": {
+    "id": "tuff",
+    "count": 1
+  }
+}
