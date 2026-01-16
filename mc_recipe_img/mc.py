@@ -16,6 +16,95 @@ DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
 DEFAULT_MCPATH_LINUX   : Path = Path.home() / '.minecraft'
 
+DATAPACK_FORMAT_VERSIONS: dict[int | float, list[str]] = {
+    4: [
+        '1.13',
+        '1.13.1',
+        '1.13.2',
+        '1.14',
+        '1.14.1',
+        '1.14.2',
+        '1.14.3',
+        '1.14.4',
+    ],
+    5: [
+        '1.15',
+        '1.15.1',
+        '1.15.2',
+        '1.16',
+        '1.16.1',
+    ],
+    6: [
+        '1.16.2',
+        '1.16.3',
+        '1.16.4',
+        '1.16.5',
+    ],
+    7: [
+        '1.17',
+        '1.17.1',
+    ],
+    8: [
+        '1.18',
+        '1.18.1',
+    ],
+    9: [
+        '1.18.2',
+    ],
+    10: [
+        '1.19',
+        '1.19.1',
+        '1.19.2',
+        '1.19.3',
+    ],
+    12: [
+        '1.19.4',
+    ],
+    15: [
+        '1.20',
+        '1.20.1',
+    ],
+    18: [
+        '1.20.2',
+    ],
+    26: [
+        '1.20.3',
+        '1.20.4',
+    ],
+    41: [
+        '1.20.5',
+        '1.20.6',
+    ],
+    48: [
+        '1.21',
+        '1.21.1',
+    ],
+    57: [
+        '1.21.2',
+        '1.21.3',
+    ],
+    61: [
+        '1.21.4',
+    ],
+    71: [
+        '1.21.5',
+    ],
+    80: [
+        '1.21.6',
+    ],
+    81: [
+        '1.21.7',
+        '1.21.8',
+    ],
+    88.0: [
+        '1.21.9',
+        '1.21.10',
+    ],
+    94.1: [
+        '1.21.11',
+    ],
+}
+
 class PackMCMeta(BaseModel):
     # Based on the information given here: https://minecraft.wiki/w/Pack.mcmeta
 
@@ -149,12 +238,13 @@ def get_jar_namelist(jar_path: str | Path, *, only: Literal['textures', 'tags'] 
     if cached_names:
         jar_names = cached_names
     else:
-        jar_names = [
-            name for name in ZipFile(jar_path).namelist()
-            if name.startswith(
-                ('assets/minecraft/textures/block/', 'assets/minecraft/textures/item/', 'data/minecraft/tags/'),
-            )
-        ]
+        with ZipFile(jar_path) as jar:
+            jar_names = [
+                name for name in jar.namelist()
+                if name.startswith(
+                    ('assets/minecraft/textures/block/', 'assets/minecraft/textures/item/', 'data/minecraft/tags/'),
+                )
+            ]
         file_cache.store(file_cache_key, json.dumps({'namelist': jar_names}))
 
     match only:
@@ -203,29 +293,28 @@ def extract_textures_from_jar(
     if isinstance(paths, str):
         paths = re.compile(paths)
 
-    jar: ZipFile = ZipFile(jar_path)
-
     texture_name_regex: re.Pattern[str] = re.compile(r"assets/minecraft/textures/(block|item)/.*\.png$")
     extracted: list[Path] = []
 
-    for name in jar.namelist():
-        if isinstance(paths, re.Pattern) and not paths.match(name):
-            continue
-        if isinstance(paths, Sequence) and (name not in paths):
-            continue
-        if not texture_name_regex.match(name):
-            continue
-        dest: Path = Path(out_dir, name)
-        if dest.is_dir():
-            logger.warning(f'Destination exists and is a directory: {dest}')
-            continue
-        if (not overwrite) and dest.is_file():
-            logger.info(f'Destination file already exists: {dest}')
-            continue
-        logger.info(f'Extracting {name} -> {dest}')
-        if not dry:
-            jar.extract(name, out_dir)
-        extracted.append(dest)
+    with ZipFile(jar_path) as jar:
+        for name in jar.namelist():
+            if isinstance(paths, re.Pattern) and not paths.match(name):
+                continue
+            if isinstance(paths, Sequence) and (name not in paths):
+                continue
+            if not texture_name_regex.match(name):
+                continue
+            dest: Path = Path(out_dir, name)
+            if dest.is_dir():
+                logger.warning(f'Destination exists and is a directory: {dest}')
+                continue
+            if (not overwrite) and dest.is_file():
+                logger.info(f'Destination file already exists: {dest}')
+                continue
+            logger.info(f'Extracting {name} -> {dest}')
+            if not dry:
+                jar.extract(name, out_dir)
+            extracted.append(dest)
 
     return extracted
 
