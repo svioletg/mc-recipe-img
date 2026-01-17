@@ -1,6 +1,5 @@
-from itertools import chain
 import os
-from collections.abc import Callable, Generator, Iterable, Sequence
+from collections.abc import Callable, Generator, Iterable
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +21,7 @@ def ensure_list[T](it: T | list[T]) -> list[T]:
     """
     return it if isinstance(it, list) else [it]
 
-def flattened[T](it: Iterable, typ: T = Any, *, flatten_str: bool = False) -> list[T]:  # noqa: ARG001
+def flattened[T](it: Iterable, typ: T = Any, *, flatten_str: bool = False) -> list[T]:
     """
     Flattens nested iterable into a one-dimensional `list` of their items. Since the final depth of these nestings is
     arbitrary, you can specify the list type using the `typ` argument, which is `Any` by default.
