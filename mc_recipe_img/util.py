@@ -35,6 +35,38 @@ def flattened[T](it: Iterable, typ: type[T] = object, *, flatten_str: bool = Fal
             acc.append(i)
     return acc
 
+def group_as_dict[T, K, V](it: Iterable[T], fn: Callable[[T], tuple[K, V]]) -> dict[K, list[V]]:
+    """
+    Groups `it` into a dictionary of lists of its items by calling `fn` on every item and using its return value as the
+    keys and values.
+
+    >>> it = ['John Doe', 'Jane Smith', 'Terry Smith', 'William Good', 'Jack Doe']
+    >>> by_surname = group_by(it, lambda name: name.split()[0], name)
+    >>> assert by_surname == {
+        'Doe': ['John Doe', 'Jack Doe'],
+        'Smith': ['Jane Smith', 'Terry Smith'],
+        'Good': ['William Good']
+        }
+
+    >>> it = ['John Doe', 'Jane Smith', 'Terry Smith', 'William Good', 'Jack Doe']
+    >>> by_surname = group_by(it, lambda name: tuple(name.split()))
+    >>> assert by_surname == {
+        'Doe': ['John', 'Jack'],
+        'Smith': ['Jane', 'Terry'],
+        'Good': ['William']
+        }
+
+    :param fn: A function that takes an item from `it`, and returns or two values to use as key and value, where its
+        first tuple value is used as a dictionary key, and the second is appended onto a list associated with that key.
+    """
+    d: dict[K, list[V]] = {}
+    for i in it:
+        key, value = fn(i)
+        if key not in d:
+            d[key] = []
+        d[key].append(value)
+    return d
+
 def partition[T](predicate: Callable[[T], bool], it: Iterable[T]) -> tuple[Generator[T], Generator[T]]:
     """
     Returns two generators in which the left yields all items of `it` for which `predicate(i)` equals `True`, and the

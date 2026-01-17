@@ -166,6 +166,18 @@ class Datapack:
         fp = Path(fp).relative_to(self.dir_path / 'data')
         return f'{'#' if 'tags' in fp.parts else ''}{fp.parts[0]}:{fp.stem}'
 
+    def reload(self) -> None:
+        """Re-scans the datapack for recipes, tags, etc. and replaces the object's corresponding attributes"""
+        for fp in self.dir_path.rglob('*.json'):
+            relpath: Path = fp.relative_to(self.dir_path / 'data')
+            category = relpath.parts[1]
+            if category == 'recipe':
+                with open(fp, 'r', encoding='utf-8') as f:
+                    self.recipes[fp] = json.load(f)
+            elif category == 'tags':
+                with open(fp, 'r', encoding='utf-8') as f:
+                    self.tags[fp] = json.load(f)['values']
+
     def resource_to_path(self, resource: str) -> Path:
         """
         Returns the JSON file path for a resource key (e.g. `minecraft:oak_planks`) in this datapack.
@@ -179,18 +191,6 @@ class Datapack:
             if fp.stem == name:
                 return fp
         raise FileNotFoundError(f'Failed to find file path for resource key: {resource}')
-
-    def reload(self) -> None:
-        """Re-scans the datapack for recipes, tags, etc. and replaces the object's corresponding attributes"""
-        for fp in self.dir_path.rglob('*.json'):
-            relpath: Path = fp.relative_to(self.dir_path / 'data')
-            category = relpath.parts[1]
-            if category == 'recipe':
-                with open(fp, 'r', encoding='utf-8') as f:
-                    self.recipes[fp] = json.load(f)
-            elif category == 'tags':
-                with open(fp, 'r', encoding='utf-8') as f:
-                    self.tags[fp] = json.load(f)['values']
 
 def get_mc_home() -> Path:
     """
@@ -311,7 +311,7 @@ def extract_textures_from_jar(
             if (not overwrite) and dest.is_file():
                 logger.info(f'Destination file already exists: {dest}')
                 continue
-            logger.info(f'Extracting {name} -> {dest}')
+            logger.info(f'Extracting: {name} -> {dest}')
             if not dry:
                 jar.extract(name, out_dir)
             extracted.append(dest)
@@ -362,8 +362,8 @@ def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
     Returns the file path for this item's texture found in any of `assets_sources`. If a namespace is not given in
     `item_id`, it will be assumed to be `minecraft`. Returns `None` if no texture path could be found. If the texture
     path found is inside a JAR file (if one of `assets_sources` is a version number), the returned path will include
-    the path to the JAR followed by the texture path—note that this is not a valid filepath, and is only to indicate
-    that the file will need to be extracted.
+    the path to the JAR followed by a double colon, then the texture path inside the JAR, indicating that the file
+    needs to be extracted.
 
     If the item texture could not found under `textures/item`, `textures/block` will be searched instead.
 
@@ -382,16 +382,20 @@ def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
         item_stem: str = f'{namespace}/textures/item/{stem}.png'
         block_stem: str = f'{namespace}/textures/block/{stem}.png'
 
-        if not src.is_dir():
+        if src.parts[-1] != 'assets':
+            logger.debug(f'Source does not end in "assets", assuming it\'s a Minecraft version: {src}')
             jar_src: Path = get_mc_version_jar(str(src))
             mem_cache_key: str = f'jar_namelist/{jar_src.stem}'
             jar_names: list[str] = mem_cache.get_or_store(mem_cache_key, lambda jar=jar_src: get_jar_namelist(jar))
 
             if (tpath := f'assets/{item_stem}') in jar_names:
-                return Path(jar_src / tpath)
+                return Path(str(jar_src) + f'::{tpath}')
             if (tpath := f'assets/{block_stem}') in jar_names:
-                return Path(jar_src / tpath)
+                return Path(str(jar_src) + f'::{tpath}')
         else:
+            if not src.is_dir():
+                logger.warning(f'Source directory does not exist: {src}')
+                continue
             if (tpath := src / item_stem).is_file():
                 return tpath
             if (tpath := src / block_stem).is_file():

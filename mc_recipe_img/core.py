@@ -7,12 +7,14 @@ from mc_recipe_img.util import partitioned
 
 def find_required_textures(pack: Datapack, *assets_sources: str | Path) -> list[Path]:
     """Returns a list of paths to textures that will be needed for every recipe in `pack`."""
+    assets_sources = assets_sources or tuple(pack.mc_versions)
+
     logger.info('Searching datapack recipes for items...')
 
     resources: list[str] = []
 
     for fp, data in pack.recipes.items():
-        logger.debug(f'Recipe: {fp}')
+        logger.debug(f'Found recipe: {fp}')
         for key in ('key', 'ingredients', 'ingredient', 'input', 'material', 'addition', 'base', 'template'):
             value: dict[str, str | int] | list[str] | str | None = data.get(key)
             if value is None:

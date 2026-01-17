@@ -1,8 +1,8 @@
-import re
 import shutil
 from enum import Enum
 from pathlib import Path
-from typing import Annotated, NoReturn
+from typing import Annotated, Never, cast
+from zipfile import ZipFile
 
 import typer
 from rich.console import Console
@@ -10,9 +10,9 @@ from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
 
-from mc_recipe_img import USER_CACHE_DIR, file_cache, init_logger, logger, mc
+from mc_recipe_img import USER_CACHE_DIR, USER_STATE_DIR, file_cache, init_logger, logger, mc
 from mc_recipe_img.core import find_required_textures
-from mc_recipe_img.util import parse_envvar_paths, partitioned
+from mc_recipe_img.util import group_as_dict, parse_envvar_paths, partitioned
 
 
 class LogLevel(str, Enum):
@@ -56,7 +56,7 @@ console: Console = setup_rich_console()
 
 #endregion RICH SETUP
 
-def abort(msg: str = 'Aborting.', *, code: int = 1) -> NoReturn:
+def abort(msg: str = 'Aborting.', *, code: int = 1) -> Never:
     """Prints a message and raises `SystemExit` with the given code."""
     console.print(f'{msg}')
     raise SystemExit(code)
@@ -118,6 +118,9 @@ def run(
         )],
     ) -> None:
     """Runs the main script."""
+
+    #region MANAGE ARGUMENTS
+
     datapack_dir = datapack_dir.absolute()
     if not datapack_dir.is_dir():
         raise NotADirectoryError(f'Not a directory, or does not exist: {datapack_dir}')
@@ -125,8 +128,8 @@ def run(
         raise NotADirectoryError(f'Datapack has no "data" subdirectory: {datapack_dir}')
 
     if not textures_sources:
-        abort('No textures source(s) given. Either set the MC_ASSETS_SRC environment variable, or use the'
-            + ' --textures/-t option to supply some.')
+        abort('[err]ERROR: No textures source(s) given. Either set the MC_ASSETS_SRC environment variable, or use the'
+            + ' --textures/-t option to supply some.[/]')
 
     env_textures_sources: list[Path] = parse_envvar_paths('MC_ASSETS_SRC')
     if textures_sources != env_textures_sources:
@@ -135,11 +138,42 @@ def run(
 
     mc_versions: list[str] = [str(v) for v in textures_sources if v.stem != 'assets']
 
+    if not mc_versions:
+        abort('[err]ERROR: At least one Minecraft version needs to be given with --textures/-t.[/]')
+
     output_dir = output_dir.absolute()
+
+    #endregion MANAGE ARGUMENTS
 
     print(datapack_dir, output_dir, textures_sources)
 
-    print(find_required_textures(mc.Datapack(datapack_dir, mc_versions), *textures_sources))
+    #region ANALYZE RECIPES, COLLECT TEXTURES
+
+    tex_archived, tex_ready = partitioned(
+        lambda t: '.jar::assets' in str(t),
+        find_required_textures(mc.Datapack(datapack_dir, mc_versions), *textures_sources),
+    )
+
+    for jar_path, namelist in group_as_dict(
+            tex_archived,
+            lambda t: cast(tuple[str, str], tuple(str(t).split('::'))),
+        ).items():
+        ext_dir: Path = USER_STATE_DIR / f'jar_extracted/{Path(jar_path).stem}'
+        if not ext_dir.exists():
+            ext_dir.mkdir(parents=True)
+        with ZipFile(jar_path) as jar:
+            logger.info(f'Extracting {len(namelist)} textures from {jar_path} to: {ext_dir}')
+            for name in namelist:
+                dest: Path = ext_dir / name
+                if dest.is_file():
+                    logger.debug(f'Already extracted: {dest}')
+                    continue
+                logger.debug(f'Extracting: {name} -> {dest}')
+                tex_ready.append(Path(jar.extract(name, ext_dir)))
+
+    #endregion ANALYZE RECIPES, COLLECT TEXTURES
+
+    print(tex_ready)
 
 @cli.callback()
 def main(
