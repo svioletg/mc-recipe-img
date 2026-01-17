@@ -1,7 +1,6 @@
 import os
 from collections.abc import Callable, Generator, Iterable
 from pathlib import Path
-from typing import Any
 
 
 def dict_try_keys[K, V](d: dict[K, V], *keys: K, default: V | None = None) -> V | None:
@@ -21,10 +20,10 @@ def ensure_list[T](it: T | list[T]) -> list[T]:
     """
     return it if isinstance(it, list) else [it]
 
-def flattened[T](it: Iterable, typ: T = Any, *, flatten_str: bool = False) -> list[T]:
+def flattened[T](it: Iterable, typ: type[T] = object, *, flatten_str: bool = False) -> list[T]:
     """
     Flattens nested iterable into a one-dimensional `list` of their items. Since the final depth of these nestings is
-    arbitrary, you can specify the list type using the `typ` argument, which is `Any` by default.
+    arbitrary, you can specify the list type using the `typ` argument.
 
     :param flatten_str: Whether to flatten `str` into individual characters, or leave them intact.
     """

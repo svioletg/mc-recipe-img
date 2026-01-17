@@ -1,3 +1,4 @@
+import re
 import shutil
 from enum import Enum
 from pathlib import Path
@@ -111,8 +112,9 @@ def run(
         textures_sources: Annotated[list[Path], typer.Option(
             '--textures', '-t', envvar='MC_ASSETS_SRC', default_factory=list,
             help='A Minecraft version number, or a path to the extracted Minecraft texture assets to use.'
-                + ' Multiple values can be given from highest to lowest priority. If both option values are given'
-                + ' and the environment variable is set, the option values will take highest priority.',
+                + ' If giving a path, the final path component needs to be "assets", or else it is treated as a'
+                + ' Minecraft version. Multiple values can be given from highest to lowest priority. If option values'
+                + ' while the environment variable is also set, the option values will take highest priority.',
         )],
     ) -> None:
     """Runs the main script."""
@@ -131,11 +133,13 @@ def run(
         # If the option was used, the enviornment var values won't be present, so tack them onto the end
         textures_sources.extend(env_textures_sources)
 
+    mc_versions: list[str] = [str(v) for v in textures_sources if v.stem != 'assets']
+
     output_dir = output_dir.absolute()
 
     print(datapack_dir, output_dir, textures_sources)
 
-    print(find_required_textures(mc.Datapack(datapack_dir), *textures_sources))
+    print(find_required_textures(mc.Datapack(datapack_dir, mc_versions), *textures_sources))
 
 @cli.callback()
 def main(

@@ -2,6 +2,7 @@ import json
 import os
 import platform
 import re
+from collections import OrderedDict
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -16,7 +17,7 @@ DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
 DEFAULT_MCPATH_LINUX   : Path = Path.home() / '.minecraft'
 
-DATAPACK_FORMAT_VERSIONS: dict[int | float, list[str]] = {
+DATAPACK_FORMAT_VERSIONS: OrderedDict[int | float, list[str]] = OrderedDict({
     4: [
         '1.13',
         '1.13.1',
@@ -103,7 +104,7 @@ DATAPACK_FORMAT_VERSIONS: dict[int | float, list[str]] = {
     94.1: [
         '1.21.11',
     ],
-}
+})
 
 class PackMCMeta(BaseModel):
     # Based on the information given here: https://minecraft.wiki/w/Pack.mcmeta
@@ -111,9 +112,9 @@ class PackMCMeta(BaseModel):
     class _Pack(BaseModel):
         description: str | list[dict[str, Any]] | dict[str, Any]
         pack_format: int | None = None
-        min_format: int | list[int] | None = None
-        max_format: int | list[int] | None = None
-        supported_formats: int | int | list[int] | dict[str, int] | None = None
+        min_format: int | tuple[int, int] | None = None
+        max_format: int | tuple[int, int] | None = None
+        supported_formats: int | list[int] | dict[str, int] | None = None
 
     class _Features(BaseModel):
         enabled: list[str]
@@ -122,13 +123,12 @@ class PackMCMeta(BaseModel):
     features: _Features | None = None
 
 class Datapack:
-    def __init__(self, dir_path: str | Path, mc_versions: list[str] | None = None) -> None:
+    def __init__(self, dir_path: str | Path, mc_versions: list[str]) -> None:
         """
         :param dir_path: Path to the datapack's directory, i.e. the directory that contains `data/` and `pack.mcmeta`.
         :param mc_versions: Which Minecraft versions this datapack supports, used for things like expanding vanilla
-            tags with `Datapack.expand_tag()`. If `None`, a list of versions from oldest to newest will be assembled
-            based on the pack's `pack_format`, `min_format`, and `max_format` fields in its `pack.mcmeta`. This list
-            is checked in order from first to last when attempting to get information from an installed JAR file.
+            tags with `Datapack.expand_tag()`. If `None`, it is set to list of versions from oldest to newest that are
+            supported by the pack's minimum pack format.
         """
         self.dir_path: Path = Path(dir_path)
         if not self.dir_path.is_dir():
@@ -139,7 +139,7 @@ class Datapack:
         with open(self.dir_path / 'pack.mcmeta', 'r', encoding='utf-8') as f:
             self.meta = PackMCMeta(**json.load(f))
 
-        self.mc_versions: list[str] = mc_versions or []
+        self.mc_versions: list[str] = mc_versions
 
         self.recipes: dict[Path, dict[str, Any]] = {}
         self.tags: dict[Path, list[str]] = {}
