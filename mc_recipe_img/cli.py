@@ -149,13 +149,10 @@ def run(
 
     #region ANALYZE RECIPES, COLLECT TEXTURES
 
-    tex_archived, tex_ready = partitioned(
-        lambda t: '.jar::assets' in str(t),
-        find_required_textures(mc.Datapack(datapack_dir, mc_versions), *textures_sources),
-    )
+    textures: dict[str, Path] = find_required_textures(mc.Datapack(datapack_dir, mc_versions), *textures_sources)
 
     for jar_path, namelist in group_as_dict(
-            tex_archived,
+            (t for t in textures.values() if '.jar::assets' in str(t)),
             lambda t: cast(tuple[str, str], tuple(str(t).split('::'))),
         ).items():
         ext_dir: Path = USER_STATE_DIR / f'jar_extracted/{Path(jar_path).stem}'
@@ -165,15 +162,16 @@ def run(
             logger.info(f'Extracting {len(namelist)} textures from {jar_path} to: {ext_dir}')
             for name in namelist:
                 dest: Path = ext_dir / name
+                textures[f'minecraft:{Path(name).stem}'] = dest
                 if dest.is_file():
                     logger.debug(f'Already extracted: {dest}')
                     continue
                 logger.debug(f'Extracting: {name} -> {dest}')
-                tex_ready.append(Path(jar.extract(name, ext_dir)))
+                jar.extract(name, ext_dir)
 
     #endregion ANALYZE RECIPES, COLLECT TEXTURES
 
-    print(tex_ready)
+    print(textures)
 
 @cli.callback()
 def main(

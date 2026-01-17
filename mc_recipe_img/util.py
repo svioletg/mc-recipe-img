@@ -3,6 +3,13 @@ from collections.abc import Callable, Generator, Iterable
 from pathlib import Path
 
 
+def dict_find_key[K, V](d: dict[K, V], value: V) -> K | None:
+    """Returns the first key in `d` that has the value `value`, returning `None` if one could not be found."""
+    try:
+        return next(k for k, v in d.items() if v == value)
+    except StopIteration:
+        return None
+
 def dict_try_keys[K, V](d: dict[K, V], *keys: K, default: V | None = None) -> V | None:
     """
     Attempts to retrieve a value from a dictionary by trying every key given from left to right, finally returning

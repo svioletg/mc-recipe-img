@@ -5,8 +5,8 @@ from mc_recipe_img.mc import Datapack, find_item_texture
 from mc_recipe_img.util import partitioned
 
 
-def find_required_textures(pack: Datapack, *assets_sources: str | Path) -> list[Path]:
-    """Returns a list of paths to textures that will be needed for every recipe in `pack`."""
+def find_required_textures(pack: Datapack, *assets_sources: str | Path) -> dict[str, Path]:
+    """Returns a dictionary of resource keys to their texture paths that will be needed for every recipe in `pack`."""
     assets_sources = assets_sources or tuple(pack.mc_versions)
 
     logger.info('Searching datapack recipes for items...')
@@ -31,4 +31,4 @@ def find_required_textures(pack: Datapack, *assets_sources: str | Path) -> list[
     # Expand tags
     resources.extend([item for t in tags for item in pack.expand_tag(t)])
 
-    return [texpath for r in set(resources) if (texpath := find_item_texture(r, *assets_sources))]
+    return {r:texpath for r in set(resources) if (texpath := find_item_texture(r, *assets_sources))}
