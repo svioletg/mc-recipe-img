@@ -172,8 +172,10 @@ class Datapack:
 
         for rpath, rdata in self.recipes.items():
             logger.debug(f'Found recipe: {rpath}')
-            for key in ('key', 'ingredients', 'ingredient', 'input', 'material', 'addition', 'base', 'template'):
-                value: dict[str, str | int] | list[str] | str | None = rdata.get(key)
+            for key in (
+                    'key', 'ingredients', 'ingredient', 'input', 'material', 'addition', 'base', 'template', 'result',
+                ):
+                value: dict[str, Any] | list[str] | str | None = rdata.get(key)
                 if value is None:
                     continue
                 if isinstance(value, str):
@@ -181,6 +183,8 @@ class Datapack:
                 elif isinstance(value, list):
                     resources.extend(value)
                 elif isinstance(value, dict):
+                    if key == 'result':
+                        resources.append(value['id'])
                     resources.extend(item for _, item in value.items() if isinstance(item, str))
 
         tags, resources = partitioned(lambda i: i[0] == '#', (i if ':' in i else f'minecraft:{i}' for i in resources))
@@ -210,7 +214,7 @@ class Datapack:
                 with open(fp, 'r', encoding='utf-8') as f:
                     self.tags[fp] = json.load(f)['values']
 
-    def render_recipes(self,
+    def render_recipes(self,  # noqa: PLR0915
             texture_map: dict[str, Path],
             recipe_filter: str | re.Pattern[str] | list[str] | None = None,
         ) -> dict[str, Image.Image]:

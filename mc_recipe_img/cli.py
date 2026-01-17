@@ -5,14 +5,13 @@ from typing import Annotated, Never, cast
 from zipfile import ZipFile
 
 import typer
+from PIL import Image
 from rich.console import Console
 from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
-from PIL import Image
 
 from mc_recipe_img import USER_CACHE_DIR, USER_STATE_DIR, file_cache, init_logger, logger, mc
-from mc_recipe_img.core import find_required_textures
 from mc_recipe_img.util import group_as_dict, parse_envvar_paths, partitioned
 
 
@@ -149,7 +148,7 @@ def run(
     #region ANALYZE RECIPES, COLLECT TEXTURES
 
     pack: mc.Datapack = mc.Datapack(datapack_dir, mc_versions)
-    texture_map: dict[str, Path] = find_required_textures(pack, *textures_sources)
+    texture_map: dict[str, Path] = pack.find_required_textures(*textures_sources)
 
     for jar_path, namelist in group_as_dict(
             (t for t in texture_map.values() if '.jar::assets' in str(t)),
