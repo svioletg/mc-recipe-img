@@ -7,6 +7,8 @@ from typing import Any
 import platformdirs
 from loguru import logger
 
+type Point = tuple[int, int]
+
 PROJECT_NAME: str = 'mc_recipe_img'
 SRC_ROOT: Path = Path(__file__).absolute().parent
 PROJECT_META: PackageMetadata = metadata(PROJECT_NAME)

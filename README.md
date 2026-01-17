@@ -1,12 +1,26 @@
 # mc-recipe-img <!-- omit in toc -->
 
-A library and command-line tool for generating images of Minecraft recipes
-(crafting, smelting, etc.) from the JSON files of a datapack.
+A library and command-line tool for generating images of Minecraft recipes (crafting, smelting,
+etc.) from the JSON files of a datapack.
 
+- [Datapack format compatibility](#datapack-format-compatibility)
 - [Usage: Setup](#usage-setup)
 - [Usage: Creating images](#usage-creating-images)
   - [CLI Options](#cli-options)
 - [Usage: Environment variables \& configuration](#usage-environment-variables--configuration)
+
+## Datapack format compatibility
+
+Any pack format not listed below has not been thoroughly tested and may or may not work with the
+script.
+
+- ✅ = Works as intended
+- ❔ = Works partially or requires a workaround (explained in notes)
+- ❌ = Does not work (may be fixed in future)
+
+|Format|Status|Notes|
+|:-----:|:----:|-----|
+|94.1|✅||
 
 ## Usage: Setup
 

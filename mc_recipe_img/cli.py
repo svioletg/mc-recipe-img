@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
+from PIL import Image
 
 from mc_recipe_img import USER_CACHE_DIR, USER_STATE_DIR, file_cache, init_logger, logger, mc
 from mc_recipe_img.core import find_required_textures
@@ -145,14 +146,13 @@ def run(
 
     #endregion MANAGE ARGUMENTS
 
-    print(datapack_dir, output_dir, textures_sources)
-
     #region ANALYZE RECIPES, COLLECT TEXTURES
 
-    textures: dict[str, Path] = find_required_textures(mc.Datapack(datapack_dir, mc_versions), *textures_sources)
+    pack: mc.Datapack = mc.Datapack(datapack_dir, mc_versions)
+    texture_map: dict[str, Path] = find_required_textures(pack, *textures_sources)
 
     for jar_path, namelist in group_as_dict(
-            (t for t in textures.values() if '.jar::assets' in str(t)),
+            (t for t in texture_map.values() if '.jar::assets' in str(t)),
             lambda t: cast(tuple[str, str], tuple(str(t).split('::'))),
         ).items():
         ext_dir: Path = USER_STATE_DIR / f'jar_extracted/{Path(jar_path).stem}'
@@ -162,16 +162,33 @@ def run(
             logger.info(f'Extracting {len(namelist)} textures from {jar_path} to: {ext_dir}')
             for name in namelist:
                 dest: Path = ext_dir / name
-                textures[f'minecraft:{Path(name).stem}'] = dest
+                texture_map[f'minecraft:{Path(name).stem}'] = dest
                 if dest.is_file():
                     logger.debug(f'Already extracted: {dest}')
                     continue
                 logger.debug(f'Extracting: {name} -> {dest}')
                 jar.extract(name, ext_dir)
+            del name
 
     #endregion ANALYZE RECIPES, COLLECT TEXTURES
 
-    print(textures)
+    #region RENDER RECIPES
+
+    rendered: dict[str, Image.Image] = pack.render_recipes(texture_map)
+
+    logger.info(f'Saving {len(rendered)} images to: {output_dir}')
+
+    for rname, img in rendered.items():
+        namespace, name = rname.split(':')
+        dest: Path = output_dir / namespace / f'{name}.png'
+        logger.debug(f'Saving image for recipe {rname} to: {dest}')
+        if not dest.parent.exists():
+            dest.parent.mkdir(parents=True)
+        img.save(output_dir / namespace / f'{name}.png')
+
+    logger.info('Done!')
+
+    #endregion RENDER RECIPES
 
 @cli.callback()
 def main(

@@ -8,10 +8,11 @@ from pathlib import Path
 from typing import Any, Literal
 from zipfile import ZipFile
 
+from PIL import Image
 from pydantic import BaseModel
 
-from mc_recipe_img import file_cache, logger, mem_cache
-from mc_recipe_img.util import ensure_list
+from mc_recipe_img import ASSETS_DIR, Point, crafting_types, file_cache, logger, mem_cache
+from mc_recipe_img.util import ensure_list, partitioned
 
 DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
@@ -158,6 +159,37 @@ class Datapack:
             return expand_vanilla_tag(tag, self.mc_versions)
         return self.tags[self.resource_to_path(tag)]
 
+    def find_required_textures(self, *assets_sources: str | Path) -> dict[str, Path]:
+        """
+        Returns a dictionary of resource keys to their texture paths that will be needed for every recipe in `pack`.
+        """
+        assets_sources = assets_sources or tuple(self.mc_versions)
+
+        logger.info('Searching datapack recipes for items...')
+
+        # Start with coal and blaze powder for smelting and brewing recipes
+        resources: list[str] = ['minecraft:coal', 'minecraft:blaze_powder']
+
+        for rpath, rdata in self.recipes.items():
+            logger.debug(f'Found recipe: {rpath}')
+            for key in ('key', 'ingredients', 'ingredient', 'input', 'material', 'addition', 'base', 'template'):
+                value: dict[str, str | int] | list[str] | str | None = rdata.get(key)
+                if value is None:
+                    continue
+                if isinstance(value, str):
+                    resources.append(value)
+                elif isinstance(value, list):
+                    resources.extend(value)
+                elif isinstance(value, dict):
+                    resources.extend(item for _, item in value.items() if isinstance(item, str))
+
+        tags, resources = partitioned(lambda i: i[0] == '#', (i if ':' in i else f'minecraft:{i}' for i in resources))
+
+        # Expand tags
+        resources.extend([item for t in tags for item in self.expand_tag(t)])
+
+        return {r:texpath for r in set(resources) if (texpath := find_item_texture(r, *assets_sources))}
+
     def path_to_resource(self, fp: str | Path) -> str:
         """
         Returns the resource key (e.g. `minecraft:oak_planks`) for a JSON file path in this datapack.
@@ -177,6 +209,141 @@ class Datapack:
             elif category == 'tags':
                 with open(fp, 'r', encoding='utf-8') as f:
                     self.tags[fp] = json.load(f)['values']
+
+    def render_recipes(self,
+            texture_map: dict[str, Path],
+            recipe_filter: str | re.Pattern[str] | list[str] | None = None,
+        ) -> dict[str, Image.Image]:
+        """
+        Renders recipe images for each recipe in the datapack, sourcing its textures for each item from `texture_map`,
+        and optionally restricting the recipes to render with `recipe_filter`.
+
+        :returns rendered: A dictionary of recipe names (including namespace) to PIL `Image` objects.
+
+        :param texture_map: A dictionary of resource keys (`<namespace>:<item>`) to texture paths on disk.
+        :param recipe_filter: An optional filter for what recipes to render. A single string will be interpereted as a
+            regex pattern to test each recipe name (including namespace) against, always matching from the beginning of
+            the name. If a `list` of strings is given, only recipe names *exactly matching* those strings are rendered.
+        """
+        loaded_base_imgs: dict[Path, Image.Image] = {
+            fp:Image.open(fp, 'r')
+            for fp in [
+                ASSETS_DIR / 'base_blasting.png',
+                ASSETS_DIR / 'base_brewing.png',
+                ASSETS_DIR / 'base_crafting_2x2.png',
+                ASSETS_DIR / 'base_crafting_3x3.png',
+                ASSETS_DIR / 'base_smelting.png',
+                ASSETS_DIR / 'base_smithing.png',
+                ASSETS_DIR / 'base_smithing.png',
+                ASSETS_DIR / 'base_smoking.png',
+            ]
+        }
+
+        rendered: dict[str, Image.Image] = {}
+        if isinstance(recipe_filter, str):
+            recipe_filter = re.compile(recipe_filter)
+
+        texture_cache: dict[str, Image.Image] = {}
+
+        def get_texture_or_cached(item: str) -> Image.Image:
+            if item.startswith('#'):
+                # Handle item tags
+                # TODO: Option to make this an animated gif cycling through each item
+                item = self.expand_tag(item.removeprefix('#'))[0]
+            if ':' not in item:
+                item = 'minecraft:' + item
+            if not (texture := texture_cache.get(item)):
+                texture_src: Path | None = texture_map.get(item)
+                if not texture_src:
+                    logger.warning(f'Missing texture: {item}')
+                    texture_src = ASSETS_DIR / 'missing.png'
+                texture = Image.open(texture_map.get(item, ASSETS_DIR / 'missing.png'))
+                texture = texture.convert(mode='RGBA')
+                texture_cache[item] = texture
+            return texture
+
+        for rpath, rdata in self.recipes.items():
+            logger.debug(f'Rendering recipe: {rpath}')
+            rtype: str | None = rdata.get('type')
+            if not rtype:
+                logger.warning(f'Recipe has no "type" field: {rpath}')
+                continue
+
+            rname: str = self.path_to_resource(rpath)
+            if recipe_filter:
+                if isinstance(recipe_filter, re.Pattern) and (not recipe_filter.match(rname)):
+                    logger.debug(f'Recipe name did not match pattern "{recipe_filter}": {rname}')
+                    continue
+                if isinstance(recipe_filter, list) and (rname not in recipe_filter):
+                    logger.debug(f'Recipe name not part of filter list: {rname}')
+                    continue
+
+            recipe_img: Image.Image | None = None
+
+            rtype = rtype.removeprefix('minecraft:')
+            match rtype:
+                case 'blasting' | 'smelting' | 'smoking':
+                    ingredient: str | list[str] = rdata['ingredient']
+                    fuel: str = 'minecraft:coal'
+                    result: str = rdata['result']['id']
+
+                    match rtype:
+                        case 'blasting':
+                            imap = crafting_types.BLASTING
+                        case 'smelting':
+                            imap = crafting_types.SMELTING
+                        case 'smoking':
+                            imap = crafting_types.SMOKING
+                        case _:
+                            raise ValueError(rtype)
+
+                    recipe_img = loaded_base_imgs[imap.base_path].copy()
+
+                    raise NotImplementedError
+                case 'crafting_shaped':
+                    pattern: dict[Point, str] = {
+                        (n, m): rdata['key'][key]
+                        for n, row in enumerate(rdata['pattern'])
+                        for m, key in enumerate(row)
+                    }
+
+                    imap = crafting_types.CRAFTING_GRID_3 \
+                        if any(2 in point for point in pattern) \
+                        else crafting_types.CRAFTING_GRID_2  # noqa: PLR2004
+                    recipe_img = loaded_base_imgs[imap.base_path].copy()
+
+                    for (row, col), item in pattern.items():
+                        texture: Image.Image = get_texture_or_cached(item)
+                        recipe_img.paste(texture, imap.inputs[row][col], texture)
+
+                    texture = get_texture_or_cached(rdata['result']['id'])
+                    recipe_img.paste(texture, imap.result, texture)
+                case 'crafting_shapeless':
+                    ingredients: list[str] = rdata['ingredients']
+
+                    imap = crafting_types.CRAFTING_GRID_3 if len(ingredients) > 4 else crafting_types.CRAFTING_GRID_2  # noqa: PLR2004
+                    recipe_img = loaded_base_imgs[imap.base_path].copy()
+
+                    for point, item in zip(imap.inputs_shapeless, ingredients, strict=False):
+                        texture: Image.Image = get_texture_or_cached(item)
+                        recipe_img.paste(texture, point, texture)
+
+                    texture = get_texture_or_cached(rdata['result']['id'])
+                    recipe_img.paste(texture, imap.result, texture)
+                case 'crafting_transmute':
+                    logger.warning(NotImplemented)
+                case 'smithing_transform' | 'smithing_trim':
+                    raise NotImplementedError
+                case _:
+                    logger.warning(f'Unsupported or unrecognized recipe type: {rtype!r}')
+
+            if recipe_img:
+                rendered[rname] = recipe_img
+
+        for _, img in loaded_base_imgs.items():
+            img.close()
+
+        return rendered
 
     def resource_to_path(self, resource: str) -> Path:
         """

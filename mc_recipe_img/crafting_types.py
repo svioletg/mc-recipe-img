@@ -1,86 +1,62 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self, TypedDict
 
-from mc_recipe_img import ASSETS_DIR
+from mc_recipe_img import ASSETS_DIR, Point
 
 
-class ItemSlot(TypedDict):
-    pos: tuple[int, int]
-    item: str | None
+class RecipeImageBase:
+    base_path: Path = NotImplemented
 
 @dataclass
-class CraftingInterface:
-    base_img: Path
-    input_slots: dict[str, ItemSlot]
-    output_slots: dict[str, ItemSlot]
+class RecipeImageSmelting(RecipeImageBase):
+    base_path: Path = ASSETS_DIR / 'base_smelting.png'
 
-    @classmethod
-    def crafting_table(cls) -> Self:
-        return cls(ASSETS_DIR / 'base_crafting_image.png',
-            input_slots={
-                'top-left'      : {'pos': (30, 17), 'item': None},
-                'top-center'    : {'pos': (48, 17), 'item': None},
-                'top-right'     : {'pos': (66, 17), 'item': None},
-                'middle-left'   : {'pos': (30, 35), 'item': None},
-                'middle-center' : {'pos': (48, 35), 'item': None},
-                'middle-right'  : {'pos': (66, 35), 'item': None},
-                'bottom-left'   : {'pos': (30, 53), 'item': None},
-                'bottom-center' : {'pos': (48, 53), 'item': None},
-                'bottom-right'  : {'pos': (66, 53), 'item': None},
-            },
-            output_slots={
-                'result': {'pos': (124, 35), 'item': None},
-            },
-        )
+    ingredient : Point = (9, 17)
+    fuel       : Point = (9, 53)
+    result     : Point = (69, 35)
 
-    @classmethod
-    def furnace(cls) -> Self:
-        return cls(ASSETS_DIR / 'base_furnace.png',
-            input_slots={
-                'ingredient': {'pos': (56, 17), 'item': None},
-                'fuel': {'pos': (56, 53), 'item': None},
-            },
-            output_slots={
-                'result': {'pos': (116, 35), 'item': None},
-            },
-        )
+@dataclass
+class RecipeImageBrewing(RecipeImageBase):
+    base_path: Path = ASSETS_DIR / 'base_brewing.png'
 
-    @classmethod
-    def blast_furnace(cls) -> Self:
-        inst = cls.furnace()
-        inst.base_img = ASSETS_DIR / 'base_blast_furnace.png'
-        return inst
+    fuel       : Point = (6, 17)
+    ingredient : Point = (68, 17)
+    results    : tuple[Point, ...] = ((45, 51), (68, 58), (91, 51))
 
-    @classmethod
-    def smoker(cls) -> Self:
-        inst = cls.furnace()
-        inst.base_img = ASSETS_DIR / 'base_smoker.png'
-        return inst
+@dataclass
+class RecipeImageCrafting2x2(RecipeImageBase):
+    base_path: Path = ASSETS_DIR / 'base_crafting_2x2.png'
 
-    @classmethod
-    def smithing_table(cls) -> Self:
-        return cls(ASSETS_DIR / 'base_smithing_table.png',
-            input_slots={
-                'template': {'pos': (8, 48), 'item': None},
-                'tool': {'pos': (26, 48), 'item': None},
-                'material': {'pos': (44, 48), 'item': None},
-            },
-            output_slots={
-                'result': {'pos': (98, 48), 'item': None},
-            },
-        )
+    inputs: tuple[tuple[Point, Point], ...] = (((12, 18), (30, 18)), ((12, 36), (30, 36)))
+    inputs_shapeless: tuple[Point, ...] = tuple(j for i in inputs for j in i)
+    result: Point = (68, 28)
 
-    @classmethod
-    def brewing_stand(cls) -> Self:
-        return cls(ASSETS_DIR / 'base_brewing_stand.png',
-            input_slots={
-                'fuel': {'pos': (17, 17), 'item': None},
-                'ingredient': {'pos': (79, 17), 'item': None},
-            },
-            output_slots={
-                'left': {'pos': (56, 51), 'item': None},
-                'center': {'pos': (56, 51), 'item': None},
-                'right': {'pos': (56, 51), 'item': None},
-            },
-        )
+@dataclass
+class RecipeImageCrafting3x3(RecipeImageBase):
+    base_path: Path = ASSETS_DIR / 'base_crafting_3x3.png'
+
+    inputs: tuple[tuple[Point, Point, Point], ...] = (
+        ((15, 17), (33, 17), (51, 17)),
+        ((15, 35), (33, 35), (51, 35)),
+        ((15, 53), (33, 53), (51, 53)),
+    )
+    inputs_shapeless: tuple[Point, ...] = tuple(j for i in inputs for j in i)
+    result: Point = (105, 31)
+
+@dataclass
+class RecipeImageSmithing(RecipeImageBase):
+    base_path: Path = ASSETS_DIR / 'base_smithing.png'
+
+    template : Point = (8, 48)
+    base     : Point = (26, 48)
+    addition : Point = (44, 48)
+    result   : Point = (98, 48)
+
+BLASTING           = RecipeImageSmelting(base_path=ASSETS_DIR / 'base_blasting.png')
+BREWING            = RecipeImageBrewing()
+CRAFTING_GRID_2    = RecipeImageCrafting2x2()
+CRAFTING_GRID_3    = RecipeImageCrafting3x3()
+SMELTING           = RecipeImageSmelting()
+SMITHING_TRANSFORM = RecipeImageSmithing()
+SMITHING_TRIM      = RecipeImageSmithing()
+SMOKING            = RecipeImageSmelting(base_path=ASSETS_DIR / 'base_smoking.png')
