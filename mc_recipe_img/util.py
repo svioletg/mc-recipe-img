@@ -1,6 +1,8 @@
+from itertools import chain
 import os
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Generator, Iterable, Sequence
 from pathlib import Path
+from typing import Any
 
 
 def dict_try_keys[K, V](d: dict[K, V], *keys: K, default: V | None = None) -> V | None:
@@ -19,6 +21,21 @@ def ensure_list[T](it: T | list[T]) -> list[T]:
     Note that this will only work for one-dimensional lists, i.e. not lists of lists.
     """
     return it if isinstance(it, list) else [it]
+
+def flattened[T](it: Iterable, typ: T = Any, *, flatten_str: bool = False) -> list[T]:  # noqa: ARG001
+    """
+    Flattens nested iterable into a one-dimensional `list` of their items. Since the final depth of these nestings is
+    arbitrary, you can specify the list type using the `typ` argument, which is `Any` by default.
+
+    :param flatten_str: Whether to flatten `str` into individual characters, or leave them intact.
+    """
+    acc = []
+    for i in it:
+        if isinstance(i, Iterable) and ((not isinstance(i, str)) or (flatten_str and len(i) > 1)):
+            acc.extend(flattened(i, typ, flatten_str=flatten_str))
+        else:
+            acc.append(i)
+    return acc
 
 def partition[T](predicate: Callable[[T], bool], it: Iterable[T]) -> tuple[Generator[T], Generator[T]]:
     """
