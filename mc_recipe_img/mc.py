@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 from zipfile import ZipFile
 
+from maybetype import maybe
 from PIL import Image
 from pydantic import BaseModel
 
@@ -346,7 +347,29 @@ class Datapack:
                 texture = self._get_texture_or_cached(result, texture_map)
                 recipe_img.paste(texture, imap.result, texture)
             case 'smithing_transform' | 'smithing_trim':
-                raise NotImplementedError
+                base: str = ensure_one(rdata['base'])
+                template: str | None = maybe(rdata.get('template')).then(ensure_one)
+                addition: str | None = maybe(rdata.get('addition')).then(ensure_one)
+                result: str = rdata['result']['id'] if rtype == 'smithing_transform' else base
+
+                imap = crafting_types.SMITHING
+                recipe_img = MEM_CACHE.get_or_store(
+                    f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
+                ).copy()
+
+                texture = self._get_texture_or_cached(base, texture_map)
+                recipe_img.paste(texture, imap.base, texture)
+
+                if template:
+                    texture = self._get_texture_or_cached(template, texture_map)
+                    recipe_img.paste(texture, imap.template, texture)
+
+                if addition:
+                    texture = self._get_texture_or_cached(addition, texture_map)
+                    recipe_img.paste(texture, imap.addition, texture)
+
+                texture = self._get_texture_or_cached(result, texture_map)
+                recipe_img.paste(texture, imap.result, texture)
             case _:
                 logger.warning(f'Unsupported or unrecognized recipe type: {rtype!r}')
 

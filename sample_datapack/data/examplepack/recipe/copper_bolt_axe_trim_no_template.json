@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_trim",
+  "base": "#minecraft:axes",
+  "addition": "copper_ingot",
+  "template": "copper_ingot",
+  "pattern": "minecraft:bolt"
+}

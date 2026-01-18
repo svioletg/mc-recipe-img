@@ -37,11 +37,11 @@ Once installed, run `mc-recipe-img --help` to see all available commands and arg
 Examples
 
 ```bash
-mc-recipe-img run --pack=mypack --textures=mc-resources/ --out=images/
+mc-recipe-img run --pack=mypack --textures=mc-resources/ --textures=1.21.11 --out=images/
 ```
 
 ```bash
-mc-recipe-img run -i mypack -t mc-resources/ -o images/
+mc-recipe-img run -i mypack -t mc-resources/ -t 1.21.11 -o images/
 ```
 
 ```bash
