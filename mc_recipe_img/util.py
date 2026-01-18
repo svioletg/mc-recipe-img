@@ -1,5 +1,5 @@
 import os
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Generator, Iterable, Iterator
 from pathlib import Path
 
 
@@ -26,6 +26,12 @@ def ensure_list[T](it: T | list[T]) -> list[T]:
     Note that this will only work for one-dimensional lists, i.e. not lists of lists.
     """
     return it if isinstance(it, list) else [it]
+
+def ensure_one[T](value: T | list[T] | tuple[T]) -> T:
+    """Returns the first item of `value` if it is a list or tuple, otherwise just returns `value`."""
+    if not isinstance(value, (list, tuple)):
+        return value
+    return value[0]
 
 def flattened[T](it: Iterable, typ: type[T] = object, *, flatten_str: bool = False) -> list[T]:
     """
@@ -109,3 +115,10 @@ def parse_envvar_paths(key: str, *, delim: str = ':', strict: bool = False) -> l
     if strict and (missing := [str(fp) for fp in paths if not fp.exists()]):
         raise FileNotFoundError(', '.join(missing))
     return paths
+
+def try_next[T](it: Iterator[T]) -> T | None:
+    """Returns `next(it)`, or `None` if `StopIteration` is raised."""
+    try:
+        return next(it)
+    except StopIteration:
+        return None

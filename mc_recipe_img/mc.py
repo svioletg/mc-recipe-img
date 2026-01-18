@@ -11,8 +11,8 @@ from zipfile import ZipFile
 from PIL import Image
 from pydantic import BaseModel
 
-from mc_recipe_img import ASSETS_DIR, Point, crafting_types, file_cache, logger, mem_cache
-from mc_recipe_img.util import ensure_list, partitioned
+from mc_recipe_img import ASSETS_DIR, FILE_CACHE, MEM_CACHE, TEXTURE_CACHE, Point, crafting_types, logger
+from mc_recipe_img.util import ensure_list, ensure_one, partitioned, try_next
 
 DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
@@ -142,8 +142,8 @@ class Datapack:
 
         self.mc_versions: list[str] = mc_versions
 
-        self.recipes: dict[Path, dict[str, Any]] = {}
-        self.tags: dict[Path, list[str]] = {}
+        self.recipes: dict[tuple[str, Path], dict[str, Any]] = {}
+        self.tags: dict[tuple[str, Path], list[str]] = {}
 
         self.reload()
 
@@ -151,13 +151,22 @@ class Datapack:
         return f'<Datapack at {self.dir_path}; {len(self.recipes)} recipes, {len(self.tags)} tags>'
 
     def expand_tag(self, tag: str) -> list[str]:
-        """Returns the resources associated with a given tag."""
+        """Returns the resources associated with a given tag. If the tag is not found, an empty list is returned."""
         tag = tag.removeprefix('#')
         if (':' not in tag) or tag.startswith('minecraft:'):
             # Assume no namespace means the minecraft namespace
             # Expand minecraft-namespaced tag from JAR file namelist
             return expand_vanilla_tag(tag, self.mc_versions)
-        return self.tags[self.resource_to_path(tag)]
+        return self.get_resource_by_name(self.tags, tag) or []
+
+    def get_resource_by_name[T](self, rmap: dict[tuple[str, Path], T], name: str) -> T | None:
+        """Returns the resource associated with this name based on the source `rmap`."""
+        return try_next(v for k, v in rmap.items() if k[0] == name)
+
+    def get_resource_by_path[T](self, rmap: dict[tuple[str, Path], T], path: str | Path) -> T | None:
+        """Returns the resource associated with this path based on the source `rmap`."""
+        path = Path(path)
+        return try_next(v for k, v in rmap.items() if k[1] == path)
 
     def find_required_textures(self, *assets_sources: str | Path) -> dict[str, Path]:
         """
@@ -197,7 +206,8 @@ class Datapack:
     def path_to_resource(self, fp: str | Path) -> str:
         """
         Returns the resource key (e.g. `minecraft:oak_planks`) for a JSON file path in this datapack.
-        If the resource is a tag, `#` will be prepended to the returned string.
+        If the resource is a tag, `#` will be prepended to the returned string. Note that whether this resource
+        really exists is not checked, the appropriate name is simply assembled based on the given path.
         """
         fp = Path(fp).relative_to(self.dir_path / 'data')
         return f'{'#' if 'tags' in fp.parts else ''}{fp.parts[0]}:{fp.stem}'
@@ -209,12 +219,122 @@ class Datapack:
             category = relpath.parts[1]
             if category == 'recipe':
                 with open(fp, 'r', encoding='utf-8') as f:
-                    self.recipes[fp] = json.load(f)
+                    self.recipes[(self.path_to_resource(fp), fp)] = json.load(f)
             elif category == 'tags':
                 with open(fp, 'r', encoding='utf-8') as f:
-                    self.tags[fp] = json.load(f)['values']
+                    self.tags[(self.path_to_resource(fp), fp)] = json.load(f)['values']
 
-    def render_recipes(self,  # noqa: PLR0915
+    def _get_texture_or_cached(self, item: str, texture_map: dict[str, Path]) -> Image.Image:
+        if item.startswith('#'):
+            # Handle item tags
+            # TODO: Option to make this an animated gif cycling through each item
+            item = self.expand_tag(item.removeprefix('#'))[0]
+        if ':' not in item:
+            item = 'minecraft:' + item
+        if not (texture := TEXTURE_CACHE.get(item)):
+            texture_src: Path | None = texture_map.get(item)
+            if not texture_src:
+                logger.warning(f'Missing texture: {item}')
+                texture_src = ASSETS_DIR / 'missing.png'
+            texture = Image.open(texture_map.get(item, ASSETS_DIR / 'missing.png'))
+            texture = texture.convert(mode='RGBA')
+            TEXTURE_CACHE[item] = texture
+        return texture
+
+    def _render_recipe(self, recipe: str | dict[str, Any], texture_map: dict[str, Path]) -> Image.Image | None:
+        """
+        Renders a single recipe, returning a PIL `Image` object if successful, otherwise `None`.
+
+        :param recipe: A recipe resource name, or the recipe data itself.
+        """
+        rdata: dict[str, Any] | None = None
+        if isinstance(recipe, str):
+            rdata = self.get_resource_by_name(self.recipes, recipe)
+            if not rdata:
+                return None
+        elif isinstance(recipe, dict):
+            rdata = recipe
+        else:
+            raise TypeError(f'Expected either string or dictionary for "recipe", got: {recipe!r}')
+
+        rtype: str | None = rdata.get('type')
+        if not rtype:
+            logger.warning(f'Recipe has no "type" field:\n{rdata}')
+            return None
+
+        recipe_img: Image.Image | None = None
+
+        rtype = rtype.removeprefix('minecraft:')
+        match rtype:
+            case 'blasting' | 'smelting' | 'smoking':
+                ingredient: str = ensure_one(rdata['ingredient'])
+                fuel: str = 'minecraft:coal'
+                result: str = rdata['result']['id']
+
+                match rtype:
+                    case 'blasting':
+                        imap = crafting_types.BLASTING
+                    case 'smelting':
+                        imap = crafting_types.SMELTING
+                    case 'smoking':
+                        imap = crafting_types.SMOKING
+                    case _:
+                        raise ValueError(rtype)
+
+                recipe_img = MEM_CACHE.get_or_store(
+                    f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
+                ).copy()
+
+                texture = self._get_texture_or_cached(fuel, texture_map)
+                recipe_img.paste(texture, imap.fuel, texture)
+
+                texture = self._get_texture_or_cached(ingredient, texture_map)
+                recipe_img.paste(texture, imap.ingredient, texture)
+
+                texture = self._get_texture_or_cached(result, texture_map)
+                recipe_img.paste(texture, imap.result, texture)
+            case 'crafting_shaped':
+                pattern: dict[Point, str] = {
+                    (n, m): rdata['key'][key]
+                    for n, row in enumerate(rdata['pattern'])
+                    for m, key in enumerate(row)
+                }
+
+                imap = crafting_types.CRAFTING_GRID_3 \
+                    if any(2 in point for point in pattern) \
+                    else crafting_types.CRAFTING_GRID_2  # noqa: PLR2004
+                recipe_img = MEM_CACHE.get_or_store(
+                    f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
+                ).copy()
+
+                for (row, col), item in pattern.items():
+                    texture: Image.Image = self._get_texture_or_cached(item, texture_map)
+                    recipe_img.paste(texture, imap.inputs[row][col], texture)
+
+                texture = self._get_texture_or_cached(rdata['result']['id'], texture_map)
+                recipe_img.paste(texture, imap.result, texture)
+            case 'crafting_shapeless':
+                ingredients: list[str] = rdata['ingredients']
+
+                imap = crafting_types.CRAFTING_GRID_3 if len(ingredients) > 4 else crafting_types.CRAFTING_GRID_2  # noqa: PLR2004
+                recipe_img = MEM_CACHE.get_or_store(
+                    f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
+                ).copy()
+
+                for point, item in zip(imap.inputs_shapeless, ingredients, strict=False):
+                    texture: Image.Image = self._get_texture_or_cached(item, texture_map)
+                    recipe_img.paste(texture, point, texture)
+
+                texture = self._get_texture_or_cached(rdata['result']['id'], texture_map)
+                recipe_img.paste(texture, imap.result, texture)
+            case 'crafting_transmute':
+                logger.warning(NotImplemented)
+            case 'smithing_transform' | 'smithing_trim':
+                raise NotImplementedError
+            case _:
+                logger.warning(f'Unsupported or unrecognized recipe type: {rtype!r}')
+
+    def render_recipes(self,
             texture_map: dict[str, Path],
             recipe_filter: str | re.Pattern[str] | list[str] | None = None,
         ) -> dict[str, Image.Image]:
@@ -229,139 +349,35 @@ class Datapack:
             regex pattern to test each recipe name (including namespace) against, always matching from the beginning of
             the name. If a `list` of strings is given, only recipe names *exactly matching* those strings are rendered.
         """
-        loaded_base_imgs: dict[Path, Image.Image] = {
-            fp:Image.open(fp, 'r')
-            for fp in [
-                ASSETS_DIR / 'base_blasting.png',
-                ASSETS_DIR / 'base_brewing.png',
-                ASSETS_DIR / 'base_crafting_2x2.png',
-                ASSETS_DIR / 'base_crafting_3x3.png',
-                ASSETS_DIR / 'base_smelting.png',
-                ASSETS_DIR / 'base_smithing.png',
-                ASSETS_DIR / 'base_smithing.png',
-                ASSETS_DIR / 'base_smoking.png',
-            ]
-        }
-
         rendered: dict[str, Image.Image] = {}
         if isinstance(recipe_filter, str):
             recipe_filter = re.compile(recipe_filter)
 
-        texture_cache: dict[str, Image.Image] = {}
-
-        def get_texture_or_cached(item: str) -> Image.Image:
-            if item.startswith('#'):
-                # Handle item tags
-                # TODO: Option to make this an animated gif cycling through each item
-                item = self.expand_tag(item.removeprefix('#'))[0]
-            if ':' not in item:
-                item = 'minecraft:' + item
-            if not (texture := texture_cache.get(item)):
-                texture_src: Path | None = texture_map.get(item)
-                if not texture_src:
-                    logger.warning(f'Missing texture: {item}')
-                    texture_src = ASSETS_DIR / 'missing.png'
-                texture = Image.open(texture_map.get(item, ASSETS_DIR / 'missing.png'))
-                texture = texture.convert(mode='RGBA')
-                texture_cache[item] = texture
-            return texture
-
-        for rpath, rdata in self.recipes.items():
+        for (rname, rpath), rdata in self.recipes.items():
             logger.debug(f'Rendering recipe: {rpath}')
-            rtype: str | None = rdata.get('type')
-            if not rtype:
-                logger.warning(f'Recipe has no "type" field: {rpath}')
-                continue
-
-            rname: str = self.path_to_resource(rpath)
-            if recipe_filter:
-                if isinstance(recipe_filter, re.Pattern) and (not recipe_filter.match(rname)):
-                    logger.debug(f'Recipe name did not match pattern "{recipe_filter}": {rname}')
-                    continue
-                if isinstance(recipe_filter, list) and (rname not in recipe_filter):
-                    logger.debug(f'Recipe name not part of filter list: {rname}')
-                    continue
-
-            recipe_img: Image.Image | None = None
-
-            rtype = rtype.removeprefix('minecraft:')
-            match rtype:
-                case 'blasting' | 'smelting' | 'smoking':
-                    ingredient: str | list[str] = rdata['ingredient']
-                    fuel: str = 'minecraft:coal'
-                    result: str = rdata['result']['id']
-
-                    match rtype:
-                        case 'blasting':
-                            imap = crafting_types.BLASTING
-                        case 'smelting':
-                            imap = crafting_types.SMELTING
-                        case 'smoking':
-                            imap = crafting_types.SMOKING
-                        case _:
-                            raise ValueError(rtype)
-
-                    recipe_img = loaded_base_imgs[imap.base_path].copy()
-
-                    raise NotImplementedError
-                case 'crafting_shaped':
-                    pattern: dict[Point, str] = {
-                        (n, m): rdata['key'][key]
-                        for n, row in enumerate(rdata['pattern'])
-                        for m, key in enumerate(row)
-                    }
-
-                    imap = crafting_types.CRAFTING_GRID_3 \
-                        if any(2 in point for point in pattern) \
-                        else crafting_types.CRAFTING_GRID_2  # noqa: PLR2004
-                    recipe_img = loaded_base_imgs[imap.base_path].copy()
-
-                    for (row, col), item in pattern.items():
-                        texture: Image.Image = get_texture_or_cached(item)
-                        recipe_img.paste(texture, imap.inputs[row][col], texture)
-
-                    texture = get_texture_or_cached(rdata['result']['id'])
-                    recipe_img.paste(texture, imap.result, texture)
-                case 'crafting_shapeless':
-                    ingredients: list[str] = rdata['ingredients']
-
-                    imap = crafting_types.CRAFTING_GRID_3 if len(ingredients) > 4 else crafting_types.CRAFTING_GRID_2  # noqa: PLR2004
-                    recipe_img = loaded_base_imgs[imap.base_path].copy()
-
-                    for point, item in zip(imap.inputs_shapeless, ingredients, strict=False):
-                        texture: Image.Image = get_texture_or_cached(item)
-                        recipe_img.paste(texture, point, texture)
-
-                    texture = get_texture_or_cached(rdata['result']['id'])
-                    recipe_img.paste(texture, imap.result, texture)
-                case 'crafting_transmute':
-                    logger.warning(NotImplemented)
-                case 'smithing_transform' | 'smithing_trim':
-                    raise NotImplementedError
-                case _:
-                    logger.warning(f'Unsupported or unrecognized recipe type: {rtype!r}')
+            recipe_img: Image.Image | None = self._render_recipe(rdata, texture_map)
 
             if recipe_img:
                 rendered[rname] = recipe_img
 
-        for _, img in loaded_base_imgs.items():
+        for _, img in (v for k, v in MEM_CACHE.data.items() if k.startswith('base_img/')):
             img.close()
 
         return rendered
 
-    def resource_to_path(self, resource: str) -> Path:
+    def resource_to_path(self, resource: str) -> Path | None:
         """
-        Returns the JSON file path for a resource key (e.g. `minecraft:oak_planks`) in this datapack.
-        `resource` must begin with `#` to get a tag's path.
+        Returns the JSON file path for a resource key (e.g. `minecraft:oak_planks`) in this datapack, or `None` if a
+        path could not be found. `resource` must begin with `#` to get a tag's path.
         """
         namespace, name = resource.removeprefix('#').split(':')
-        search_pool: Iterable[Path] = self.tags if resource[0] == '#' else self.recipes
+        search_pool: Iterable[Path] = (k[1] for k in (self.tags if resource[0] == '#' else self.recipes))
         for fp in search_pool:
             if fp.relative_to(self.dir_path / 'data').parts[0] != namespace:
                 continue
             if fp.stem == name:
                 return fp
-        raise FileNotFoundError(f'Failed to find file path for resource key: {resource}')
+        return None
 
 def get_mc_home() -> Path:
     """
@@ -403,7 +419,7 @@ def get_jar_namelist(jar_path: str | Path, *, only: Literal['textures', 'tags'] 
     jar_names: list[str] = []
 
     file_cache_key: str = f'jar_namelist/{jar_path.stem}.json'
-    cached_names: list[str] = file_cache \
+    cached_names: list[str] = FILE_CACHE \
         .get(file_cache_key, {}, parser=json.loads) \
         .get('namelist', [])
     if cached_names:
@@ -416,7 +432,7 @@ def get_jar_namelist(jar_path: str | Path, *, only: Literal['textures', 'tags'] 
                     ('assets/minecraft/textures/block/', 'assets/minecraft/textures/item/', 'data/minecraft/tags/'),
                 )
             ]
-        file_cache.store(file_cache_key, json.dumps({'namelist': jar_names}))
+        FILE_CACHE.store(file_cache_key, json.dumps({'namelist': jar_names}))
 
     match only:
         case None:
@@ -506,12 +522,12 @@ def expand_vanilla_tag(tag: str, mc_versions: str | list[str]) -> list[str]:
         )
 
     mem_cache_key: str = f'vanilla_tag/{jar_path.stem}/{tag_stem}'
-    if cached := mem_cache.data.get(mem_cache_key):
+    if cached := MEM_CACHE.data.get(mem_cache_key):
         return cached['values']
 
     file_cache_key: str = mem_cache_key + '.json'
-    if cached := file_cache.get(file_cache_key, parser=json.loads):
-        mem_cache.data[mem_cache_key] = cached
+    if cached := FILE_CACHE.get(file_cache_key, parser=json.loads):
+        MEM_CACHE.data[mem_cache_key] = cached
         return cached['values']
 
     for name in map(Path, get_jar_namelist(jar_path, only='tags')):
@@ -524,8 +540,8 @@ def expand_vanilla_tag(tag: str, mc_versions: str | list[str]) -> list[str]:
     with ZipFile(jar_path) as jar:
         values: list[str] = json.loads(jar.read(str(name)).decode('utf-8'))['values']
 
-    mem_cache.data[mem_cache_key] = {'values': values}
-    file_cache.store(file_cache_key, json.dumps({'values': values}))
+    MEM_CACHE.data[mem_cache_key] = {'values': values}
+    FILE_CACHE.store(file_cache_key, json.dumps({'values': values}))
     return values
 
 def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
@@ -557,7 +573,7 @@ def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
             logger.debug(f'Source does not end in "assets", assuming it\'s a Minecraft version: {src}')
             jar_src: Path = get_mc_version_jar(str(src))
             mem_cache_key: str = f'jar_namelist/{jar_src.stem}'
-            jar_names: list[str] = mem_cache.get_or_store(mem_cache_key, lambda jar=jar_src: get_jar_namelist(jar))
+            jar_names: list[str] = MEM_CACHE.get_or_store(mem_cache_key, lambda jar=jar_src: get_jar_namelist(jar))
 
             if (tpath := f'assets/{item_stem}') in jar_names:
                 return Path(str(jar_src) + f'::{tpath}')

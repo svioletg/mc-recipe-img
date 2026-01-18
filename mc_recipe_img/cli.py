@@ -11,7 +11,7 @@ from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
 
-from mc_recipe_img import USER_CACHE_DIR, USER_STATE_DIR, file_cache, init_logger, logger, mc
+from mc_recipe_img import USER_CACHE_DIR, USER_STATE_DIR, FILE_CACHE, init_logger, logger, mc
 from mc_recipe_img.util import group_as_dict, parse_envvar_paths, partitioned
 
 
@@ -211,7 +211,7 @@ def main(
 
     if clear_cache:
         logger.info('Clearing the cache...')
-        shutil.rmtree(file_cache.cache_dir)
+        shutil.rmtree(FILE_CACHE.cache_dir)
 
 if __name__ == '__main__':
     cli()

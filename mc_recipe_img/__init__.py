@@ -6,6 +6,7 @@ from typing import Any
 
 import platformdirs
 from loguru import logger
+from PIL import Image
 
 type Point = tuple[int, int]
 
@@ -82,7 +83,7 @@ class FileCache:
             f.write(value)
         return fp
 
-file_cache: FileCache = FileCache(USER_CACHE_DIR)
+FILE_CACHE: FileCache = FileCache(USER_CACHE_DIR)
 
 class MemoryCache:
     def __init__(self) -> None:
@@ -99,7 +100,9 @@ class MemoryCache:
         self.data[key] = value
         return value
 
-mem_cache: MemoryCache = MemoryCache()
+MEM_CACHE: MemoryCache = MemoryCache()
+
+TEXTURE_CACHE: dict[str, Image.Image] = {}
 
 def init_logger(stdout_level: str = 'INFO') -> int:
     """
