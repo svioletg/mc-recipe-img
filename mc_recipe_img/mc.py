@@ -328,7 +328,23 @@ class Datapack:
                 texture = self._get_texture_or_cached(rdata['result']['id'], texture_map)
                 recipe_img.paste(texture, imap.result, texture)
             case 'crafting_transmute':
-                logger.warning(NotImplemented)
+                input_item: str = ensure_one(rdata['input'])
+                material: str = ensure_one(rdata['material'])
+                result: str = rdata['result']['id']
+
+                imap = crafting_types.CRAFTING_GRID_2
+                recipe_img = MEM_CACHE.get_or_store(
+                    f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
+                ).copy()
+
+                texture = self._get_texture_or_cached(input_item, texture_map)
+                recipe_img.paste(texture, imap.inputs_shapeless[0], texture)
+
+                texture = self._get_texture_or_cached(material, texture_map)
+                recipe_img.paste(texture, imap.inputs_shapeless[1], texture)
+
+                texture = self._get_texture_or_cached(result, texture_map)
+                recipe_img.paste(texture, imap.result, texture)
             case 'smithing_transform' | 'smithing_trim':
                 raise NotImplementedError
             case _:
@@ -355,8 +371,8 @@ class Datapack:
         if isinstance(recipe_filter, str):
             recipe_filter = re.compile(recipe_filter)
 
-        for (rname, rpath), rdata in self.recipes.items():
-            logger.debug(f'Rendering recipe: {rpath}')
+        for (rname, _rpath), rdata in self.recipes.items():
+            logger.info(f'Rendering recipe: {rname}')
             recipe_img: Image.Image | None = self._render_recipe(rdata, texture_map)
 
             if recipe_img:

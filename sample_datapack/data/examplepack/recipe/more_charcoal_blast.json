@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": "#examplepack:can_burn_for_charcoal",
+  "result": {
+    "id": "minecraft:charcoal"
+  },
+  "cookingtime": 400
+}

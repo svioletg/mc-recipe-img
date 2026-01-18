@@ -23,12 +23,6 @@ USER_CACHE_DIR: Path = Path(platformdirs.user_cache_dir(
     ensure_exists=True,
 ))
 
-USER_STATE_DIR: Path = Path(platformdirs.user_state_dir(
-    PROJECT_NAME,
-    appauthor='Seth Violet Gibbs',
-    ensure_exists=True,
-))
-
 logger.remove()
 
 class FileCache:
@@ -113,7 +107,7 @@ def init_logger(stdout_level: str = 'INFO') -> int:
     logger.remove()
 
     logger.level('DEBUG', color='<fg #777777>')
-    logger.level('INFO', color='<fg #ffffff>')
+    logger.level('INFO', color='<normal>')
     logger.level('WARNING', color='<yellow>')
     logger.level('ERROR', color='<red>')
 

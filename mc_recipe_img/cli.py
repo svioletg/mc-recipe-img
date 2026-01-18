@@ -11,7 +11,7 @@ from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
 
-from mc_recipe_img import USER_CACHE_DIR, USER_STATE_DIR, FILE_CACHE, init_logger, logger, mc
+from mc_recipe_img import FILE_CACHE, USER_CACHE_DIR, init_logger, logger, mc
 from mc_recipe_img.util import group_as_dict, parse_envvar_paths, partitioned
 
 
@@ -154,11 +154,12 @@ def run(
             (t for t in texture_map.values() if '.jar::assets' in str(t)),
             lambda t: cast(tuple[str, str], tuple(str(t).split('::'))),
         ).items():
-        ext_dir: Path = USER_STATE_DIR / f'jar_extracted/{Path(jar_path).stem}'
+        ext_dir: Path = USER_CACHE_DIR / f'jar_extracted/{Path(jar_path).stem}'
         if not ext_dir.exists():
             ext_dir.mkdir(parents=True)
         with ZipFile(jar_path) as jar:
             logger.info(f'Extracting {len(namelist)} textures from {jar_path} to: {ext_dir}')
+            new: int = 0
             for name in namelist:
                 dest: Path = ext_dir / name
                 texture_map[f'minecraft:{Path(name).stem}'] = dest
@@ -166,7 +167,9 @@ def run(
                     logger.debug(f'Already extracted: {dest}')
                     continue
                 logger.debug(f'Extracting: {name} -> {dest}')
+                new += 1
                 jar.extract(name, ext_dir)
+            logger.info(f'{new} new textures, {len(namelist) - new} already extracted')
             del name
 
     #endregion ANALYZE RECIPES, COLLECT TEXTURES
