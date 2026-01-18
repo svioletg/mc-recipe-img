@@ -157,7 +157,7 @@ class Datapack:
             # Assume no namespace means the minecraft namespace
             # Expand minecraft-namespaced tag from JAR file namelist
             return expand_vanilla_tag(tag, self.mc_versions)
-        return self.get_resource_by_name(self.tags, tag) or []
+        return self.get_resource_by_name(self.tags, '#' + tag) or []
 
     def get_resource_by_name[T](self, rmap: dict[tuple[str, Path], T], name: str) -> T | None:
         """Returns the resource associated with this name based on the source `rmap`."""
@@ -241,7 +241,7 @@ class Datapack:
             TEXTURE_CACHE[item] = texture
         return texture
 
-    def _render_recipe(self, recipe: str | dict[str, Any], texture_map: dict[str, Path]) -> Image.Image | None:
+    def _render_recipe(self, recipe: str | dict[str, Any], texture_map: dict[str, Path]) -> Image.Image | None:  # noqa: PLR0915
         """
         Renders a single recipe, returning a PIL `Image` object if successful, otherwise `None`.
 
@@ -334,6 +334,8 @@ class Datapack:
             case _:
                 logger.warning(f'Unsupported or unrecognized recipe type: {rtype!r}')
 
+        return recipe_img
+
     def render_recipes(self,
             texture_map: dict[str, Path],
             recipe_filter: str | re.Pattern[str] | list[str] | None = None,
@@ -360,7 +362,7 @@ class Datapack:
             if recipe_img:
                 rendered[rname] = recipe_img
 
-        for _, img in (v for k, v in MEM_CACHE.data.items() if k.startswith('base_img/')):
+        for img in (v for k, v in MEM_CACHE.data.items() if k.startswith('base_img/')):
             img.close()
 
         return rendered
@@ -510,6 +512,8 @@ def expand_vanilla_tag(tag: str, mc_versions: str | list[str]) -> list[str]:
     Returns the values associated with a vanilla (`minecraft` namespace) tag by attempting to find and read it from one
     the associated JAR files for the versions given in `mc_versions`.
     """
+    tag = tag.removeprefix('#')
+
     mc_versions = ensure_list(mc_versions)
     tag_stem: str = tag.split(':')[-1]
 
