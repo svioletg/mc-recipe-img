@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "loguru>=0.7.3",
-    "maybetype",
+    "maybetype @ git+https://github.com/svioletg/py-maybetype",
     "pillow>=12.1.0",
     "platformdirs>=4.4.0",
     "pydantic>=2.11.7",
@@ -19,8 +19,8 @@ dependencies = [
 requires = ["hatchling >= 1.27.0"]
 build-backend = "hatchling.build"
 
-[tool.uv.sources]
-maybetype = { git = "https://github.com/svioletg/py-maybetype" }
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [project.scripts]
 "mc-recipe-img" = "mc_recipe_img.cli:cli"
