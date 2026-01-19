@@ -13,7 +13,7 @@ from PIL import Image
 from pydantic import BaseModel
 
 from mc_recipe_img import ASSETS_DIR, FILE_CACHE, MEM_CACHE, TEXTURE_CACHE, Point, crafting_types, logger
-from mc_recipe_img.util import ensure_list, ensure_one, partitioned, try_next
+from mc_recipe_img.util import ensure_list, ensure_one, flattened, partitioned, try_next
 
 DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
@@ -158,7 +158,16 @@ class Datapack:
             # Assume no namespace means the minecraft namespace
             # Expand minecraft-namespaced tag from JAR file namelist
             return expand_vanilla_tag(tag, self.mc_versions)
-        return self.get_resource_by_name(self.tags, '#' + tag) or []
+
+        tags, items = partitioned(
+            lambda i: i.startswith('#'),
+            self.get_resource_by_name(self.tags, '#' + tag) or [],
+        )
+
+        if tags:
+            items.extend(flattened((self.expand_tag(t) for t in tags), str))
+
+        return items
 
     def get_resource_by_name[T](self, rmap: dict[tuple[str, Path], T], name: str) -> T | None:
         """Returns the resource associated with this name based on the source `rmap`."""
@@ -242,7 +251,7 @@ class Datapack:
             TEXTURE_CACHE[item] = texture
         return texture
 
-    def _render_recipe(self, recipe: str | dict[str, Any], texture_map: dict[str, Path]) -> Image.Image | None:  # noqa: PLR0915
+    def render_recipe(self, recipe: str | dict[str, Any], texture_map: dict[str, Path]) -> Image.Image | None:  # noqa: PLR0915
         """
         Renders a single recipe, returning a PIL `Image` object if successful, otherwise `None`.
 
@@ -383,12 +392,12 @@ class Datapack:
         Renders recipe images for each recipe in the datapack, sourcing its textures for each item from `texture_map`,
         and optionally restricting the recipes to render with `recipe_filter`.
 
-        :returns rendered: A dictionary of recipe names (including namespace) to PIL `Image` objects.
-
         :param texture_map: A dictionary of resource keys (`<namespace>:<item>`) to texture paths on disk.
         :param recipe_filter: An optional filter for what recipes to render. A single string will be interpereted as a
             regex pattern to test each recipe name (including namespace) against, always matching from the beginning of
             the name. If a `list` of strings is given, only recipe names *exactly matching* those strings are rendered.
+
+        :returns rendered: A dictionary of recipe names (including namespace) to PIL `Image` objects.
         """
         rendered: dict[str, Image.Image] = {}
         if isinstance(recipe_filter, str):
@@ -396,7 +405,7 @@ class Datapack:
 
         for (rname, _rpath), rdata in self.recipes.items():
             logger.info(f'Rendering recipe: {rname}')
-            recipe_img: Image.Image | None = self._render_recipe(rdata, texture_map)
+            recipe_img: Image.Image | None = self.render_recipe(rdata, texture_map)
 
             if recipe_img:
                 rendered[rname] = recipe_img
@@ -581,11 +590,18 @@ def expand_vanilla_tag(tag: str, mc_versions: str | list[str]) -> list[str]:
 
     # Read the tag JSON from the JAR and cache it before returning
     with ZipFile(jar_path) as jar:
-        values: list[str] = json.loads(jar.read(str(name)).decode('utf-8'))['values']
+        tags, items = partitioned(
+            lambda i: i.startswith('#'),
+            json.loads(jar.read(str(name)).decode('utf-8'))['values'],
+        )
 
-    MEM_CACHE.data[mem_cache_key] = {'values': values}
-    FILE_CACHE.store(file_cache_key, json.dumps({'values': values}))
-    return values
+    if tags:
+        items.extend(flattened((expand_vanilla_tag(t, mc_versions) for t in tags), str))
+
+    MEM_CACHE.data[mem_cache_key] = {'values': items}
+    FILE_CACHE.store(file_cache_key, json.dumps({'values': items}))
+
+    return items
 
 def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
     """

@@ -2,6 +2,10 @@ import os
 from collections.abc import Callable, Generator, Iterable, Iterator
 from pathlib import Path
 
+from PIL import Image
+
+from mc_recipe_img import ASSETS_DIR, MEM_CACHE
+
 
 def dict_find_key[K, V](d: dict[K, V], value: V) -> K | None:
     """Returns the first key in `d` that has the value `value`, returning `None` if one could not be found."""
@@ -79,6 +83,22 @@ def group_as_dict[T, K, V](it: Iterable[T], fn: Callable[[T], tuple[K, V]]) -> d
             d[key] = []
         d[key].append(value)
     return d
+
+def make_stairs_texture(base: str | Path | Image.Image) -> Image.Image:
+    """Returns an isometric stairs block icon from a base block texture."""
+    if not isinstance(base, Image.Image):
+        base = Image.open(base)
+    img = Image.new('RGBA', (16, 16))
+    mask = MEM_CACHE.get_or_store('stairs_mask', lambda: Image.open(ASSETS_DIR / 'stairs_mask.png').convert('RGBA'))
+    overlay = MEM_CACHE.get_or_store(
+        'stairs_overlay',
+        lambda: Image.open(ASSETS_DIR / 'stairs_overlay.png').convert('RGBA'),
+    )
+
+    img.paste(base, mask=mask)
+    img.paste(overlay, mask=overlay)
+
+    return img
 
 def partition[T](predicate: Callable[[T], bool], it: Iterable[T]) -> tuple[Generator[T], Generator[T]]:
     """

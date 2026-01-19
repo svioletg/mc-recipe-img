@@ -98,11 +98,19 @@ MEM_CACHE: MemoryCache = MemoryCache()
 
 TEXTURE_CACHE: dict[str, Image.Image] = {}
 
-def init_logger(stdout_level: str = 'INFO') -> int:
+def init_logger(
+        stdout_level: str = 'INFO',
+        fp: str | Path | None = None,
+        *,
+        fp_append: bool = False,
+    ) -> tuple[int, int | None]:
     """
     Initializes (or re-initializes) the logger with a given level.
 
-    :returns stdout_handler: `int`
+    :param fp: Optional file to save logs to.
+    :param fp_append: If `True`, fp is opened in append mode rather than overwriting it.
+
+    :returns (stdout_handler, file_handler?): The stdout handler ID and file handler ID, if `fp` is given.
     """
     logger.remove()
 
@@ -111,10 +119,23 @@ def init_logger(stdout_level: str = 'INFO') -> int:
     logger.level('WARNING', color='<yellow>')
     logger.level('ERROR', color='<red>')
 
-    return logger.add(
+    stdout_handler: int = logger.add(
         sys.stdout,
         colorize=True,
         format='<level>[{level}] {message}</level>',
         level=stdout_level,
         diagnose=False,
     )
+
+    file_handler: int | None = None
+    if fp:
+        file_handler = logger.add(
+            Path(fp),
+            colorize=False,
+            format='[{time:YYYY-MM-DD hh:mm:ss} {level}] {message}',
+            level='DEBUG',
+            diagnose=False,
+            mode='a' if fp_append else 'w',
+        )
+
+    return stdout_handler, file_handler

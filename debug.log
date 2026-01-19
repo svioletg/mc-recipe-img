@@ -1,0 +1,346 @@
+[2026-01-19 04:06:34 DEBUG] Logger initialized
+[2026-01-19 04:06:34 INFO] Clearing the cache...
+[2026-01-19 04:06:34 INFO] Searching datapack recipes for items...
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_buddydlx', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_buddydlx.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_stairs_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_stairs_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_darkzone', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_darkzone.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_door_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_door_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_lantern_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_lantern_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_bulb_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_bulb_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_xmas', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_xmas.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_trapdoor_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_trapdoor_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_grate_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_grate_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_chiseled_copper_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_chiseled_copper_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_paradise', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_paradise.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_door_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_door_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:potion_haste_ii', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/potion_haste_ii.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_slab_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_slab_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_burndown', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_burndown.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_golem_statue_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_golem_statue_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_mansion', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_mansion.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_rudrbust', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_rudrbust.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_golem_statue_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_golem_statue_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_slab_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_slab_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_chest_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_chest_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_trapdoor_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_trapdoor_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_bulb_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_bulb_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_chain_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_chain_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_tickride', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_tickride.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:potion_haste_long', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/potion_haste_long.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_lantern_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_lantern_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_stairs_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_stairs_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_chiseled_copper_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_chiseled_copper_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_rvlution', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_rvlution.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_chiseled_copper_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_chiseled_copper_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_chest_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_chest_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_trapdoor_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_trapdoor_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_golem_statue_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_golem_statue_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_raisebat', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_raisebat.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_shanghai', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_shanghai.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_bars_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_bars_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_slab_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_slab_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_grate_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_grate_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_chain_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_chain_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_gbust', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_gbust.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_buddybad', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_buddybad.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_dreams', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_dreams.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_chain_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_chain_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_square', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_square.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_lantern_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_lantern_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_stairs_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_stairs_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_bars_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_bars_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_chest_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_chest_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_cut_copper_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_cut_copper_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_bars_0', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_bars_0.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:potion_haste', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/potion_haste.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_lucky', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_lucky.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_grate_2', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_grate_2.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_door_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_door_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:oxidize_copper_bulb_1', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/oxidize_copper_bulb_1.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_yesheart', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_yesheart.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_glowsnow', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_glowsnow.json'))
+[2026-01-19 04:06:34 DEBUG] Found recipe: ('bcrmc7:music_disc_sword', PosixPath('/home/violet/code/mc-datapack/bcrmc-datapacks/dist/bcrmc7_data_pack/data/bcrmc7/recipe/music_disc_sword.json'))
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Source does not end in "assets", assuming it's a Minecraft version: 1.21.11
+[2026-01-19 04:06:34 DEBUG] Texture map:
+-----------------------------------  -------------------------------------------------------------------------------------------------------------------------
+minecraft:tropical_fish              /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/tropical_fish.png
+minecraft:exposed_cut_copper         /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_cut_copper.png
+minecraft:totem_of_undying           /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/totem_of_undying.png
+minecraft:exposed_copper_chain       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/exposed_copper_chain.png
+minecraft:wind_charge                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/wind_charge.png
+minecraft:oxidized_copper            /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_copper.png
+minecraft:diamond_axe                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/diamond_axe.png
+minecraft:wooden_sword               /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/wooden_sword.png
+minecraft:cocoa_beans                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/cocoa_beans.png
+minecraft:exposed_copper_grate       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_copper_grate.png
+minecraft:weathered_copper_trapdoor  /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_copper_trapdoor.png
+minecraft:blue_dye                   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/blue_dye.png
+minecraft:packed_ice                 /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/packed_ice.png
+minecraft:diamond_sword              /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/diamond_sword.png
+minecraft:weathered_copper           /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_copper.png
+minecraft:exposed_copper_door        /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/exposed_copper_door.png
+minecraft:rail                       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/rail.png
+minecraft:nether_wart                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/nether_wart.png
+minecraft:copper_block               /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/copper_block.png
+minecraft:heartbreak_pottery_sherd   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/heartbreak_pottery_sherd.png
+minecraft:weathered_copper_lantern   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/weathered_copper_lantern.png
+vex_armor_trim_smithing_template     /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/vex_armor_trim_smithing_template.png
+minecraft:flint_and_steel            /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/flint_and_steel.png
+minecraft:chiseled_copper            /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/chiseled_copper.png
+minecraft:exposed_chiseled_copper    /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_chiseled_copper.png
+minecraft:oxidized_copper_trapdoor   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_copper_trapdoor.png
+minecraft:copper_bulb                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/copper_bulb.png
+minecraft:cut_copper                 /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/cut_copper.png
+minecraft:diamond_hoe                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/diamond_hoe.png
+minecraft:oxidized_cut_copper        /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_cut_copper.png
+minecraft:oxidized_copper_bulb       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_copper_bulb.png
+minecraft:dried_kelp                 /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/dried_kelp.png
+minecraft:copper_chain               /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/copper_chain.png
+minecraft:weathered_copper_bars      /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_copper_bars.png
+minecraft:weathered_copper_chain     /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/weathered_copper_chain.png
+minecraft:weathered_copper_door      /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/weathered_copper_door.png
+minecraft:copper_grate               /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/copper_grate.png
+minecraft:blaze_rod                  /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/blaze_rod.png
+minecraft:diamond_block              /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/diamond_block.png
+minecraft:oxidized_copper_lantern    /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/oxidized_copper_lantern.png
+minecraft:weathered_copper_bulb      /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_copper_bulb.png
+minecraft:glowstone_dust             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/glowstone_dust.png
+minecraft:potion                     /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/potion.png
+minecraft:nautilus_shell             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/nautilus_shell.png
+minecraft:oxidized_copper_chain      /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/oxidized_copper_chain.png
+minecraft:copper_lantern             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/copper_lantern.png
+minecraft:black_dye                  /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/black_dye.png
+minecraft:exposed_copper_lantern     /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/exposed_copper_lantern.png
+minecraft:oxidized_copper_grate      /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_copper_grate.png
+minecraft:coal                       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/coal.png
+minecraft:copper_door                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/copper_door.png
+minecraft:copper_bars                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/copper_bars.png
+minecraft:ice                        /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/ice.png
+minecraft:sugar                      /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/sugar.png
+minecraft:sand                       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/sand.png
+minecraft:heart_pottery_sherd        /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/heart_pottery_sherd.png
+minecraft:jack_o_lantern             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/jack_o_lantern.png
+minecraft:oxidized_copper_bars       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_copper_bars.png
+minecraft:exposed_copper             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_copper.png
+minecraft:weathered_cut_copper       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_cut_copper.png
+minecraft:ghast_tear                 /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/ghast_tear.png
+minecraft:carved_pumpkin             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/carved_pumpkin.png
+minecraft:exposed_copper_trapdoor    /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_copper_trapdoor.png
+minecraft:lime_dye                   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/lime_dye.png
+minecraft:blue_ice                   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/blue_ice.png
+minecraft:weathered_chiseled_copper  /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_chiseled_copper.png
+minecraft:wooden_hoe                 /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/wooden_hoe.png
+minecraft:tropical_fish_bucket       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/tropical_fish_bucket.png
+minecraft:rabbit_foot                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/rabbit_foot.png
+minecraft:heart_of_the_sea           /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/heart_of_the_sea.png
+minecraft:snow                       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/snow.png
+minecraft:blaze_powder               /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/blaze_powder.png
+minecraft:music_disc_far             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/music_disc_far.png
+minecraft:oxidized_chiseled_copper   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/oxidized_chiseled_copper.png
+minecraft:slime_block                /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/slime_block.png
+minecraft:minecart                   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/minecart.png
+minecraft:copper_trapdoor            /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/copper_trapdoor.png
+minecraft:red_dye                    /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/red_dye.png
+minecraft:light_blue_dye             /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/light_blue_dye.png
+minecraft:oxidized_copper_door       /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/oxidized_copper_door.png
+minecraft:snowball                   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/snowball.png
+minecraft:exposed_copper_bulb        /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_copper_bulb.png
+minecraft:redstone                   /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/redstone.png
+minecraft:slime_ball                 /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/slime_ball.png
+minecraft:weathered_copper_grate     /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/weathered_copper_grate.png
+minecraft:exposed_copper_bars        /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/block/exposed_copper_bars.png
+minecraft:powder_snow_bucket         /home/violet/code/mc-respack/__mc-extracted__/1.21.10/assets/minecraft/textures/item/powder_snow_bucket.png
+-----------------------------------  -------------------------------------------------------------------------------------------------------------------------
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_buddydlx
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_stairs_2
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:weathered_cut_copper_stairs
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:oxidized_cut_copper_stairs
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_darkzone
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:pumpkin
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_door_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_lantern_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_bulb_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_xmas
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:snow_block
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_trapdoor_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_grate_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_chiseled_copper_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_paradise
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_door_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:potion_haste_ii
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_slab_1
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:exposed_cut_copper_slab
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:weathered_cut_copper_slab
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_burndown
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_golem_statue_1
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:exposed_copper_golem_statue
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:weathered_copper_golem_statue
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_mansion
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_rudrbust
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_golem_statue_2
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:oxidized_copper_golem_statue
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_slab_2
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:oxidized_cut_copper_slab
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_chest_1
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:exposed_copper_chest
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:weathered_copper_chest
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_trapdoor_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_bulb_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_chain_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_tickride
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:potion_haste_long
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_lantern_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_stairs_1
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:exposed_cut_copper_stairs
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_chiseled_copper_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_rvlution
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:rose_bush
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_chiseled_copper_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_chest_0
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:copper_chest
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_trapdoor_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_golem_statue_0
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:copper_golem_statue
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_raisebat
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_shanghai
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_bars_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_slab_0
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:cut_copper_slab
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_grate_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_chain_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_gbust
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_buddybad
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_dreams
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:red_bed
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_chain_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_square
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:bee_nest
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_lantern_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_stairs_0
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:cut_copper_stairs
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_bars_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_chest_2
+[2026-01-19 04:06:34 WARNING] Missing texture: minecraft:oxidized_copper_chest
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_cut_copper_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_bars_0
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:potion_haste
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_lucky
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_grate_2
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_door_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:oxidize_copper_bulb_1
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_yesheart
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_glowsnow
+[2026-01-19 04:06:34 INFO] Rendering recipe: bcrmc7:music_disc_sword
+[2026-01-19 04:06:34 INFO] Saving 64 images to: /home/violet/code/python/mc-recipe-img/out
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_buddydlx to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_buddydlx.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_stairs_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_stairs_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_darkzone to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_darkzone.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_door_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_door_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_lantern_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_lantern_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_bulb_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_bulb_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_xmas to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_xmas.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_trapdoor_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_trapdoor_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_grate_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_grate_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_chiseled_copper_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_chiseled_copper_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_paradise to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_paradise.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_door_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_door_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:potion_haste_ii to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/potion_haste_ii.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_slab_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_slab_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_burndown to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_burndown.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_golem_statue_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_golem_statue_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_mansion to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_mansion.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_rudrbust to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_rudrbust.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_golem_statue_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_golem_statue_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_slab_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_slab_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_chest_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_chest_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_trapdoor_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_trapdoor_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_bulb_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_bulb_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_chain_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_chain_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_tickride to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_tickride.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:potion_haste_long to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/potion_haste_long.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_lantern_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_lantern_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_stairs_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_stairs_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_chiseled_copper_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_chiseled_copper_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_rvlution to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_rvlution.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_chiseled_copper_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_chiseled_copper_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_chest_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_chest_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_trapdoor_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_trapdoor_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_golem_statue_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_golem_statue_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_raisebat to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_raisebat.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_shanghai to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_shanghai.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_bars_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_bars_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_slab_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_slab_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_grate_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_grate_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_chain_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_chain_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_gbust to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_gbust.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_buddybad to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_buddybad.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_dreams to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_dreams.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_chain_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_chain_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_square to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_square.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_lantern_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_lantern_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_stairs_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_stairs_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_bars_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_bars_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_chest_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_chest_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_cut_copper_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_cut_copper_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_bars_0 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_bars_0.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:potion_haste to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/potion_haste.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_lucky to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_lucky.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_grate_2 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_grate_2.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_door_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_door_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:oxidize_copper_bulb_1 to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/oxidize_copper_bulb_1.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_yesheart to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_yesheart.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_glowsnow to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_glowsnow.png
+[2026-01-19 04:06:34 DEBUG] Saving image for recipe bcrmc7:music_disc_sword to: /home/violet/code/python/mc-recipe-img/out/bcrmc7/music_disc_sword.png
+[2026-01-19 04:06:34 INFO] Done!

@@ -10,6 +10,7 @@ from rich.console import Console
 from rich.highlighter import RegexHighlighter
 from rich.prompt import Confirm
 from rich.theme import Theme
+from tabulate2 import tabulate
 
 from mc_recipe_img import FILE_CACHE, USER_CACHE_DIR, init_logger, logger, mc
 from mc_recipe_img.util import group_as_dict, parse_envvar_paths, partitioned
@@ -150,6 +151,7 @@ def run(
     pack: mc.Datapack = mc.Datapack(datapack_dir, mc_versions)
     texture_map: dict[str, Path] = pack.find_required_textures(*textures_sources)
 
+    # Extract textures from JAR where necessary
     for jar_path, namelist in group_as_dict(
             (t for t in texture_map.values() if '.jar::assets' in str(t)),
             lambda t: cast(tuple[str, str], tuple(str(t).split('::'))),
@@ -176,6 +178,8 @@ def run(
 
     #region RENDER RECIPES
 
+    logger.debug(f'Texture map:\n{tabulate(texture_map.items())}')
+
     rendered: dict[str, Image.Image] = pack.render_recipes(texture_map)
 
     logger.info(f'Saving {len(rendered)} images to: {output_dir}')
@@ -199,6 +203,9 @@ def main(
             '--log-level', '-l', help='Sets the log level.',
             case_sensitive=False,
         )] = LogLevel.INFO,
+        log_file: Annotated[Path | None, typer.Option(
+            '--log-file', help='Saves debug logs to this file.',
+        )] = None,
         debug: Annotated[bool, typer.Option(
             '-D', help='Shortcut for `--log-level=debug`. Overrides any value given to --log-level.',
             is_flag=True,
@@ -209,7 +216,7 @@ def main(
     ) -> None:
     if debug:
         log_level = LogLevel.DEBUG
-    init_logger(log_level)
+    init_logger(log_level, log_file)
     logger.debug('Logger initialized')
 
     if clear_cache:

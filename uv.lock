@@ -174,6 +174,7 @@ dev = [
     { name = "ipython" },
     { name = "pytest" },
     { name = "ruff" },
+    { name = "tabulate2" },
 ]
 
 [package.metadata]
@@ -187,6 +188,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.2" },
     { name = "rich", specifier = ">=14.1.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14.11" },
+    { name = "tabulate2", marker = "extra == 'dev'", specifier = ">=1.10.2" },
     { name = "typer", specifier = ">=0.21.1" },
 ]
 provides-extras = ["dev"]
@@ -464,6 +466,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707, upload-time = "2023-09-30T13:58:05.479Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521, upload-time = "2023-09-30T13:58:03.53Z" },
+]
+
+[[package]]
+name = "tabulate2"
+version = "1.10.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "wcwidth" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ac/c9/047f0049459e1310fe82c9668fd0d903f1e1f7cac7cfb3034a12f9f3fe9d/tabulate2-1.10.2.tar.gz", hash = "sha256:326277486a1cb83652014e42a51787588dcd0412dd92c6bd7b7650b2925d3085", size = 92663, upload-time = "2025-06-06T05:30:54.447Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/7f/ed37136b7287c6022cfba27351162cd6eb962eeaf00c1d24107a3a977eca/tabulate2-1.10.2-py3-none-any.whl", hash = "sha256:d54125bdf2e3206b52c6755c09c3483beb129f500d61cc8da4ea8dba39cd48b6", size = 65407, upload-time = "2025-06-06T05:30:52.58Z" },
 ]
 
 [[package]]
