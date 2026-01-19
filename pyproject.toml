@@ -3,7 +3,7 @@ name = "mc-recipe-img"
 version = "0.1.0"
 description = "Creates Minecraft recipe images from recipe JSON files in a datapack."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "loguru>=0.7.3",
     "maybetype",
