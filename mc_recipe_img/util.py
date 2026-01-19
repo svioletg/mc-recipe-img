@@ -60,18 +60,18 @@ def group_as_dict[T, K, V](it: Iterable[T], fn: Callable[[T], tuple[K, V]]) -> d
     >>> it = ['John Doe', 'Jane Smith', 'Terry Smith', 'William Good', 'Jack Doe']
     >>> by_surname = group_by(it, lambda name: name.split()[0], name)
     >>> assert by_surname == {
-        'Doe': ['John Doe', 'Jack Doe'],
-        'Smith': ['Jane Smith', 'Terry Smith'],
-        'Good': ['William Good']
-        }
+    >>>   'Doe': ['John Doe', 'Jack Doe'],
+    >>>   'Smith': ['Jane Smith', 'Terry Smith'],
+    >>>   'Good': ['William Good']
+    >>> }
 
     >>> it = ['John Doe', 'Jane Smith', 'Terry Smith', 'William Good', 'Jack Doe']
     >>> by_surname = group_by(it, lambda name: tuple(name.split()))
     >>> assert by_surname == {
-        'Doe': ['John', 'Jack'],
-        'Smith': ['Jane', 'Terry'],
-        'Good': ['William']
-        }
+    >>>   'Doe': ['John', 'Jack'],
+    >>>   'Smith': ['Jane', 'Terry'],
+    >>>   'Good': ['William']
+    >>> }
 
     :param fn: A function that takes an item from `it`, and returns or two values to use as key and value, where its
         first tuple value is used as a dictionary key, and the second is appended onto a list associated with that key.
