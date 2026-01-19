@@ -17,5 +17,6 @@ wheels/
 tmp/
 out/
 .*/
+!.github/
 *.ipynb
 *.log
