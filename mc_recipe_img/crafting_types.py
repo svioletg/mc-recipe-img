@@ -41,7 +41,7 @@ class RecipeImageCrafting3x3(RecipeImageBase):
         ((15, 53), (33, 53), (51, 53)),
     )
     inputs_shapeless: tuple[Point, ...] = tuple(j for i in inputs for j in i)
-    result: Point = (105, 31)
+    result: Point = (109, 35)
 
 @dataclass
 class RecipeImageSmithing(RecipeImageBase):

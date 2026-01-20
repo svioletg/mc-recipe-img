@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from mc_recipe_img import ASSETS_DIR, MEM_CACHE
+from mc_recipe_img import ASSETS_DIR, MEM_CACHE, RenderSpecialCase
 
 
 def dict_find_key[K, V](d: dict[K, V], value: V) -> K | None:
@@ -84,19 +84,42 @@ def group_as_dict[T, K, V](it: Iterable[T], fn: Callable[[T], tuple[K, V]]) -> d
         d[key].append(value)
     return d
 
-def make_stairs_texture(base: str | Path | Image.Image) -> Image.Image:
-    """Returns an isometric stairs block icon from a base block texture."""
+def render_block_special(
+        base: str | Path | Image.Image,
+        which: str | RenderSpecialCase,
+        *,
+        cache: bool = True,
+    ) -> Image.Image:
+    """
+    Renders a "special case" block and returns the resulting PIL `Image` object.
+
+    :param base: The base block texture to use.
+    :param which: Which special case to render the base texture as.
+    :param cache: Whether to use the cache. If `False`, the cache is neither read nor written to.
+    """
     if not isinstance(base, Image.Image):
         base = Image.open(base)
     img = Image.new('RGBA', (16, 16))
-    mask = MEM_CACHE.get_or_store('stairs_mask', lambda: Image.open(ASSETS_DIR / 'stairs_mask.png').convert('RGBA'))
+
+    which = RenderSpecialCase(which)
+
+    def get_mask_callback() -> Image.Image:
+        return Image.open(ASSETS_DIR / f'{which}_mask.png').convert('RGBA')
+
+    def get_overlay_callback() -> Image.Image:
+        return Image.open(ASSETS_DIR / f'{which}_overlay.png').convert('RGBA')
+
+    mask = MEM_CACHE.get_or_store(
+        f'{which}_mask',
+        get_mask_callback,
+    ) if cache else get_mask_callback()
     overlay = MEM_CACHE.get_or_store(
-        'stairs_overlay',
-        lambda: Image.open(ASSETS_DIR / 'stairs_overlay.png').convert('RGBA'),
-    )
+        f'{which}_overlay',
+        get_overlay_callback,
+    ) if cache else get_overlay_callback()
 
     img.paste(base, mask=mask)
-    img.paste(overlay, mask=overlay)
+    img.alpha_composite(overlay)
 
     return img
 

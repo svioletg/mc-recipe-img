@@ -1,5 +1,7 @@
 import sys
 from collections.abc import Callable
+from enum import StrEnum
+from functools import reduce
 from importlib.metadata import PackageMetadata, metadata
 from pathlib import Path
 from typing import Any
@@ -83,6 +85,9 @@ class MemoryCache:
     def __init__(self) -> None:
         self.data: dict[str, Any] = {}
 
+    def __repr__(self) -> str:
+        return f'<MemoryCache at 0x{id(self):x}; {len(self.data)} item(s) at {self.get_size() / 1000:.2f} KB>'
+
     def get_or_store[T](self, key: str, store_callback: Callable[[], T]) -> T:
         """
         Retrieves the value of `key` from the cache if one exists, otherwise calls `store_callback` and stores the
@@ -94,9 +99,18 @@ class MemoryCache:
         self.data[key] = value
         return value
 
+    def get_size(self) -> int:
+        """Returns the size of this cache's `data` attribute and its values in bytes."""
+        return sys.getsizeof(self.data) + reduce(lambda acc, i: acc + sys.getsizeof(i), self.data.values(), 0)
+
 MEM_CACHE: MemoryCache = MemoryCache()
 
 TEXTURE_CACHE: dict[str, Image.Image] = {}
+
+class RenderSpecialCase(StrEnum):
+    BLOCK_ISO = 'block_iso'
+    STAIRS    = 'stairs'
+    SLAB      = 'slab'
 
 def init_logger(
         stdout_level: str = 'INFO',

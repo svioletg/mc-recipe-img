@@ -5,15 +5,32 @@ import re
 from collections import OrderedDict
 from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 from zipfile import ZipFile
 
 from maybetype import maybe
 from PIL import Image
 from pydantic import BaseModel
 
-from mc_recipe_img import ASSETS_DIR, FILE_CACHE, MEM_CACHE, TEXTURE_CACHE, Point, crafting_types, logger
-from mc_recipe_img.util import ensure_list, ensure_one, flattened, partitioned, try_next
+from mc_recipe_img import (
+    ASSETS_DIR,
+    FILE_CACHE,
+    MEM_CACHE,
+    TEXTURE_CACHE,
+    USER_CACHE_DIR,
+    Point,
+    crafting_types,
+    logger,
+)
+from mc_recipe_img.util import (
+    ensure_list,
+    ensure_one,
+    flattened,
+    group_as_dict,
+    partitioned,
+    render_block_special,
+    try_next,
+)
 
 DEFAULT_MCPATH_WINDOWS : Path = Path.home() / 'AppData/Roaming/.minecraft'
 DEFAULT_MCPATH_MAC     : Path = Path.home() / 'Library/Application Support/minecraft'
@@ -125,14 +142,22 @@ class PackMCMeta(BaseModel):
     features: _Features | None = None
 
 class Datapack:
-    def __init__(self, dir_path: str | Path, mc_versions: list[str]) -> None:
+    def __init__(self,
+            dir_path: str | Path,
+            mc_versions: list[str],
+            assets_sources: list[str | Path] | None = None,
+        ) -> None:
         """
         :param dir_path: Path to the datapack's directory, i.e. the directory that contains `data/` and `pack.mcmeta`.
         :param mc_versions: Which Minecraft versions this datapack supports, used for things like expanding vanilla
             tags with `Datapack.expand_tag()`. If `None`, it is set to list of versions from oldest to newest that are
             supported by the pack's minimum pack format.
+        :param assets_sources: A list of paths to search for assets in, in addition to the versions given in
+            `mc_versions`, used for things like the `texture_map` property and rendering recipes. This can be useful
+            for providing a datapack-specific resource pack, or to use already-extracted textures instead of having to
+            extract them from a JAR. `mc_versions` will be appended onto the end of this list automatically.
         """
-        self.dir_path: Path = Path(dir_path)
+        self.dir_path: Path = Path(dir_path).absolute()
         if not self.dir_path.is_dir():
             raise NotADirectoryError(f'Not a directory or does not exist: {self.dir_path}')
         if not (fp.stem for fp in self.dir_path.glob('*/') if fp.stem == 'data'):
@@ -142,9 +167,12 @@ class Datapack:
             self.meta = PackMCMeta(**json.load(f))
 
         self.mc_versions: list[str] = mc_versions
+        self.assets_sources: list[str | Path] = (assets_sources or []) + mc_versions
 
         self.recipes: dict[tuple[str, Path], dict[str, Any]] = {}
         self.tags: dict[tuple[str, Path], list[str]] = {}
+
+        self._texture_map: dict[str, Path] = {}
 
         self.reload()
 
@@ -178,11 +206,20 @@ class Datapack:
         path = Path(path)
         return try_next(v for k, v in rmap.items() if k[1] == path)
 
-    def find_required_textures(self, *assets_sources: str | Path) -> dict[str, Path]:
+    def get_texture_map(self, *, reload: bool = False, extract: bool = False) -> dict[str, Path]:
         """
         Returns a dictionary of resource keys to their texture paths that will be needed for every recipe in `pack`.
+        The result of this function is stored in the private attribute `_texture_map`, after which all calls to this
+        function will simply return its stored value instead of searching the pack again unless `reload` is `True`.
+
+        :param reload: Whether to ignore the already stored `_texture_map` and search the pack again, overwriting that
+            value with the new map.
+        :param extract: Whether to extract textures using the JARs of this pack's `mc_versions`. If `False`, textures
+            needed from a JAR file (ones that weren't already located in any of `assets_sources`) are returned as per
+            `find_item_texture()`.
         """
-        assets_sources = assets_sources or tuple(self.mc_versions)
+        if (not reload) and self._texture_map:
+            return self._texture_map
 
         logger.info('Searching datapack recipes for items...')
 
@@ -211,7 +248,38 @@ class Datapack:
         # Expand tags
         resources.extend([item for t in tags for item in self.expand_tag(t)])
 
-        return {r:texpath for r in set(resources) if (texpath := find_item_texture(r, *assets_sources))}
+        self._texture_map: dict[str, Path] = {
+            r:texpath
+            for r in set(resources)
+            if (texpath := find_item_texture(r, *self.assets_sources))
+        }
+
+        if not extract:
+            return self._texture_map
+
+        for jar_path, namelist in group_as_dict(
+            (t for t in self._texture_map.values() if '.jar::assets' in str(t)),
+            lambda t: cast(tuple[str, str], tuple(str(t).split('::'))),
+        ).items():
+            ext_dir: Path = USER_CACHE_DIR / f'jar_extracted/{Path(jar_path).stem}'
+            if not ext_dir.exists():
+                ext_dir.mkdir(parents=True)
+            with ZipFile(jar_path) as jar:
+                logger.info(f'Extracting {len(namelist)} textures from {jar_path} to: {ext_dir}')
+                new: int = 0
+                for name in namelist:
+                    dest: Path = ext_dir / name
+                    self._texture_map[f'minecraft:{Path(name).stem}'] = dest
+                    if dest.is_file():
+                        logger.debug(f'Already extracted: {dest}')
+                        continue
+                    logger.debug(f'Extracting: {name} -> {dest}')
+                    new += 1
+                    jar.extract(name, ext_dir)
+                logger.info(f'{new} new textures, {len(namelist) - new} already extracted')
+                del name
+
+        return self._texture_map
 
     def path_to_resource(self, fp: str | Path) -> str:
         """
@@ -223,7 +291,7 @@ class Datapack:
         return f'{'#' if 'tags' in fp.parts else ''}{fp.parts[0]}:{fp.stem}'
 
     def reload(self) -> None:
-        """Re-scans the datapack for recipes, tags, etc. and replaces the object's corresponding attributes"""
+        """Re-scans the datapack for recipes, tags, etc. and replaces the object's corresponding attributes."""
         for fp in self.dir_path.rglob('*.json'):
             relpath: Path = fp.relative_to(self.dir_path / 'data')
             category = relpath.parts[1]
@@ -234,7 +302,16 @@ class Datapack:
                 with open(fp, 'r', encoding='utf-8') as f:
                     self.tags[(self.path_to_resource(fp), fp)] = json.load(f)['values']
 
-    def _get_texture_or_cached(self, item: str, texture_map: dict[str, Path]) -> Image.Image:
+    def get_loaded_texture(self, item: str) -> Image.Image:
+        """
+        Returns a PIL `Image` for the given `item`, first checking if one has already been cached, otherwise returning
+        its key in `texture_map` and caching the result. If the key could not be found, a placeholder missing texture
+        is returned.
+
+        :param item: Either a single item ID or a tag name. In the latter case, the first item of the tag list is used.
+        """
+        special_case: str | None = None
+
         if item.startswith('#'):
             # Handle item tags
             # TODO: Option to make this an animated gif cycling through each item
@@ -242,16 +319,28 @@ class Datapack:
         if ':' not in item:
             item = 'minecraft:' + item
         if not (texture := TEXTURE_CACHE.get(item)):
-            texture_src: Path | None = texture_map.get(item)
+            texture_src: Path | None = self.get_texture_map().get(item)
             if not texture_src:
-                logger.warning(f'Missing texture: {item}')
-                texture_src = ASSETS_DIR / 'missing.png'
-            texture = Image.open(texture_map.get(item, ASSETS_DIR / 'missing.png'))
+                if item.endswith('stairs'):
+                    special_case = 'stairs'
+                else:
+                    logger.warning(f'Missing texture: {item}')
+            texture = Image.open(self.get_texture_map().get(item, ASSETS_DIR / 'missing.png'))
             texture = texture.convert(mode='RGBA')
             TEXTURE_CACHE[item] = texture
+
+        if special_case:
+            texture = render_block_special(
+                txsrc := self.get_texture_map().get(item.replace('_stairs', ''), ASSETS_DIR / 'missing.png'),
+                special_case,
+            )
+
+            if txsrc == ASSETS_DIR / 'missing.png':
+                logger.warning(f'Missing texture: {item}')
+
         return texture
 
-    def render_recipe(self, recipe: str | dict[str, Any], texture_map: dict[str, Path]) -> Image.Image | None:  # noqa: PLR0915
+    def render_recipe(self, recipe: str | dict[str, Any]) -> Image.Image | None:  # noqa: PLR0915
         """
         Renders a single recipe, returning a PIL `Image` object if successful, otherwise `None`.
 
@@ -295,13 +384,13 @@ class Datapack:
                     f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
                 ).copy()
 
-                texture = self._get_texture_or_cached(fuel, texture_map)
+                texture = self.get_loaded_texture(fuel)
                 recipe_img.paste(texture, imap.fuel, texture)
 
-                texture = self._get_texture_or_cached(ingredient, texture_map)
+                texture = self.get_loaded_texture(ingredient)
                 recipe_img.paste(texture, imap.ingredient, texture)
 
-                texture = self._get_texture_or_cached(result, texture_map)
+                texture = self.get_loaded_texture(result)
                 recipe_img.paste(texture, imap.result, texture)
             case 'crafting_shaped':
                 pattern: dict[Point, str] = {
@@ -318,10 +407,10 @@ class Datapack:
                 ).copy()
 
                 for (row, col), item in pattern.items():
-                    texture: Image.Image = self._get_texture_or_cached(item, texture_map)
+                    texture: Image.Image = self.get_loaded_texture(item)
                     recipe_img.paste(texture, imap.inputs[row][col], texture)
 
-                texture = self._get_texture_or_cached(rdata['result']['id'], texture_map)
+                texture = self.get_loaded_texture(rdata['result']['id'])
                 recipe_img.paste(texture, imap.result, texture)
             case 'crafting_shapeless':
                 ingredients: list[str] = rdata['ingredients']
@@ -332,10 +421,10 @@ class Datapack:
                 ).copy()
 
                 for point, item in zip(imap.inputs_shapeless, ingredients, strict=False):
-                    texture: Image.Image = self._get_texture_or_cached(item, texture_map)
+                    texture: Image.Image = self.get_loaded_texture(item)
                     recipe_img.paste(texture, point, texture)
 
-                texture = self._get_texture_or_cached(rdata['result']['id'], texture_map)
+                texture = self.get_loaded_texture(rdata['result']['id'])
                 recipe_img.paste(texture, imap.result, texture)
             case 'crafting_transmute':
                 input_item: str = ensure_one(rdata['input'])
@@ -347,13 +436,13 @@ class Datapack:
                     f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
                 ).copy()
 
-                texture = self._get_texture_or_cached(input_item, texture_map)
+                texture = self.get_loaded_texture(input_item)
                 recipe_img.paste(texture, imap.inputs_shapeless[0], texture)
 
-                texture = self._get_texture_or_cached(material, texture_map)
+                texture = self.get_loaded_texture(material)
                 recipe_img.paste(texture, imap.inputs_shapeless[1], texture)
 
-                texture = self._get_texture_or_cached(result, texture_map)
+                texture = self.get_loaded_texture(result)
                 recipe_img.paste(texture, imap.result, texture)
             case 'smithing_transform' | 'smithing_trim':
                 base: str = ensure_one(rdata['base'])
@@ -366,28 +455,25 @@ class Datapack:
                     f'base_img/{imap.base_path}', lambda: Image.open(imap.base_path, 'r'),
                 ).copy()
 
-                texture = self._get_texture_or_cached(base, texture_map)
+                texture = self.get_loaded_texture(base)
                 recipe_img.paste(texture, imap.base, texture)
 
                 if template:
-                    texture = self._get_texture_or_cached(template, texture_map)
+                    texture = self.get_loaded_texture(template)
                     recipe_img.paste(texture, imap.template, texture)
 
                 if addition:
-                    texture = self._get_texture_or_cached(addition, texture_map)
+                    texture = self.get_loaded_texture(addition)
                     recipe_img.paste(texture, imap.addition, texture)
 
-                texture = self._get_texture_or_cached(result, texture_map)
+                texture = self.get_loaded_texture(result)
                 recipe_img.paste(texture, imap.result, texture)
             case _:
                 logger.warning(f'Unsupported or unrecognized recipe type: {rtype!r}')
 
         return recipe_img
 
-    def render_recipes(self,
-            texture_map: dict[str, Path],
-            recipe_filter: str | re.Pattern[str] | list[str] | None = None,
-        ) -> dict[str, Image.Image]:
+    def render_recipes(self, recipe_filter: str | re.Pattern[str] | list[str] | None = None) -> dict[str, Image.Image]:
         """
         Renders recipe images for each recipe in the datapack, sourcing its textures for each item from `texture_map`,
         and optionally restricting the recipes to render with `recipe_filter`.
@@ -405,13 +491,10 @@ class Datapack:
 
         for (rname, _rpath), rdata in self.recipes.items():
             logger.info(f'Rendering recipe: {rname}')
-            recipe_img: Image.Image | None = self.render_recipe(rdata, texture_map)
+            recipe_img: Image.Image | None = self.render_recipe(rdata)
 
             if recipe_img:
                 rendered[rname] = recipe_img
-
-        for img in (v for k, v in MEM_CACHE.data.items() if k.startswith('base_img/')):
-            img.close()
 
         return rendered
 
@@ -608,8 +691,8 @@ def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
     Returns the file path for this item's texture found in any of `assets_sources`. If a namespace is not given in
     `item_id`, it will be assumed to be `minecraft`. Returns `None` if no texture path could be found. If the texture
     path found is inside a JAR file (if one of `assets_sources` is a version number), the returned path will include
-    the path to the JAR followed by a double colon, then the texture path inside the JAR, indicating that the file
-    needs to be extracted.
+    the path to the JAR followed by a double colon (`::`), then the texture path inside the JAR, indicating that the
+    file needs to be extracted.
 
     If the item texture could not found under `textures/item`, `textures/block` will be searched instead.
 
