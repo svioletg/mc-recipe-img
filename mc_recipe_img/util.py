@@ -113,6 +113,7 @@ def render_block_special(
         f'{which}_mask',
         get_mask_callback,
     ) if cache else get_mask_callback()
+
     overlay = MEM_CACHE.get_or_store(
         f'{which}_overlay',
         get_overlay_callback,

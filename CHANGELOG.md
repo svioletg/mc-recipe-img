@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tags within tags are now fully expanded
 - The result item texture in 3x3 crafting grid recipes is now positioned correctly
+- Stairs blocks can now be approximately rendered
 
 ## [0.1.0]
 

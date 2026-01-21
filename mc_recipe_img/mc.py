@@ -327,16 +327,17 @@ class Datapack:
                     logger.warning(f'Missing texture: {item}')
             texture = Image.open(self.get_texture_map().get(item, ASSETS_DIR / 'missing.png'))
             texture = texture.convert(mode='RGBA')
+
+            if special_case:
+                texture = render_block_special(
+                    txsrc := self.get_texture_map().get(item.replace('_stairs', ''), ASSETS_DIR / 'missing.png'),
+                    special_case,
+                )
+
+                if txsrc == ASSETS_DIR / 'missing.png':
+                    logger.warning(f'Missing texture: {item}')
+
             TEXTURE_CACHE[item] = texture
-
-        if special_case:
-            texture = render_block_special(
-                txsrc := self.get_texture_map().get(item.replace('_stairs', ''), ASSETS_DIR / 'missing.png'),
-                special_case,
-            )
-
-            if txsrc == ASSETS_DIR / 'missing.png':
-                logger.warning(f'Missing texture: {item}')
 
         return texture
 
@@ -710,6 +711,11 @@ def find_item_texture(item_id: str, *assets_sources: str | Path) -> Path | None:
     for src in map(Path, assets_sources):
         item_stem: str = f'{namespace}/textures/item/{stem}.png'
         block_stem: str = f'{namespace}/textures/block/{stem}.png'
+
+        if '_stairs' in block_stem:
+            # Stairs blocks use the base block texture, which should be the same as the stairs item ID with the
+            # _stairs suffix removed
+            block_stem = block_stem.replace('_stairs', '')
 
         if src.parts[-1] != 'assets':
             logger.debug(f'Source does not end in "assets", assuming it\'s a Minecraft version: {src}')
